@@ -1,14 +1,39 @@
 <!DOCTYPE html>
 <head>
+  <title>Snake!</title>
   <link rel="stylesheet" href="styles.css" />
-  <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+  <link rel="icon" href="https://cdn.glitch.me/61845a2e-50dd-416e-b27c-f6c4d479d0ad%2Ffavicon.ico?v=1633638312872" />
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
   <script src="scripts.js"></script>
 </head>
 <body>
-  <h1>Snake!</h1>
+  <h1 id="title">Snake!</h1>
   <p>
     Use the arrow keys or WASD to control the snake. Collect the fruits to earn
     ponits.
   </p>
   <div class="backgroundBox" id="backgroundBox"></div>
+  <div class="dimBox">
+    <div class="optionsBox">
+      <h1>
+        Options
+      </h1>
+      <div>
+        <button onclick="snakeOptions()" type="button" style="margin-left: 30px; background-color: gray" class="optionsTab">
+          Snake
+        </button>
+        <button onclick="fruitOptions()" type="button" class="optionsTab">
+          Fruit
+        </button>
+        <button onclick="boardOptions()" type="button" class="optionsTab">
+          Board
+        </button>
+      </div>
+      <div class="optionsContent" id="optionsContent">
+      </div>
+      <button type="button" class="start">
+        Start
+      </button>
+    </div>
+  </div>
 </body>

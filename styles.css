@@ -17,6 +17,7 @@ p {
   background-color: #99FF99;
   position: absolute;
   border: 2px solid lightgreen;
+  border-radius: 10px;
 }
 
 .foodBlock {
@@ -43,4 +44,72 @@ p {
   position: absolute;
   margin-left: calc(50% - (390px / 2));
   margin-top: 50px;
+  border-radius: 10px;
+}
+
+.optionsBox {
+  width: 375px;
+  height: 500px;
+  background-color: white;
+  box-shadow: 0 0 10px black;
+  position: absolute;
+  margin-left: calc(50% - (375px / 2));
+  top: calc(50% - (500px / 2));
+  border-radius: 10px;
+}
+
+.dimBox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #00000080;
+  width: 100%;
+  height: 100%;
+}
+
+.optionsTab {
+  border: 1px solid gray;
+  border-bottom: none;
+  margin-left: 0;
+  background-color: white;
+  display: inline-block;
+  border-radius: 5px 5px 0 0;
+}
+
+.optionsTab:hover {
+  background-color: darkgray;
+}
+
+.optionsTab:active {
+  background-color: gray;
+}
+
+.optionsContent {
+  background-color: whitesmoke;
+  width: calc(100% - 40px);
+  height: 300px;
+  margin-left: 20px;
+  margin-right: 20px;
+  border: 1px solid gray;
+  border-radius: 5px;
+}
+
+.start {
+  width: 70%;
+  height: 60px;
+  margin-left: 15%;
+  margin-top: 20px;
+  border: none;
+  background-color: #309FFF;
+  color: white;
+  font-size: 30px;
+  border-radius: 15px;
+}
+
+.start:hover {
+  background-color: #2681d1;
+}
+
+.start:active {
+  background-color: #195991;
 }

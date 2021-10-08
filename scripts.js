@@ -3,6 +3,7 @@
 // s = snake
 // f = food
 
+
 var map = [];
 var snake = [];
 var direction = [1, 0];
@@ -17,6 +18,7 @@ var blocksToAdd = 0;
 var score = 0;
 var interval;
 const delay = 150;
+const animationTime = 100;
 
 document.onkeydown = function(e) {
   switch (e.code) {
@@ -41,9 +43,9 @@ document.onkeydown = function(e) {
         direction = [-1, 0];
       break;
   }
-  clearInterval(interval);
-  move();
-  interval = setInterval(move, delay);
+  //clearInterval(interval);
+  //move();
+  //interval = setInterval(move, delay);
 };
 
 function printSnakeBlockCount() {
@@ -143,6 +145,7 @@ function move() {
     return;
   } else if (spaceAhead == "f") {
     score++;
+    document.getElementById("title").innerHTML = "Snake! Score: " + score.toString();
     blocksToAdd++;
     removeFood([
       snakePosition[0] + direction[0],
@@ -157,9 +160,9 @@ function move() {
       let newLeftPosition =
         parseInt(snake[i].style.left, 10) + 30 * direction[0];
       let newTopPosition = parseInt(snake[i].style.top, 10) + 30 * direction[1];
-      snake[i].style.left = newLeftPosition + "px";
-      //$("#" + snake[i].id).animate({left:newLeftPosition + 'px'}, {duration: 100, easing: 'linear'});
-      snake[i].style.top = newTopPosition + "px";
+      //snake[i].style.left = newLeftPosition + "px";
+      $("#" + snake[i].id).animate({left:newLeftPosition + 'px', top:newTopPosition + 'px'}, {duration: animationTime, easing: 'linear'});
+      //snake[i].style.top = newTopPosition + "px";
       //$("#" + snake[i].id).animate({top:newTopPosition + 'px'}, {duration: 100, easing: 'linear'});
       snakePosition = [
         snakePosition[0] + direction[0],
@@ -182,6 +185,7 @@ function move() {
         newSnakeBlock.setAttribute("class", "snakeBlock");
         newSnakeBlock.style.left = snake[i].style.left;
         newSnakeBlock.style.top = snake[i].style.top;
+        newSnakeBlock.id = snake.length;
         document.getElementById("backgroundBox").appendChild(newSnakeBlock);
         snake.push(newSnakeBlock);
         blocksToAdd--;
@@ -192,9 +196,16 @@ function move() {
       }
     }
 
-    snake[i].style.left = snake[i - 1].style.left;
-    snake[i].style.top = snake[i - 1].style.top;
+    //snake[i].style.left = snake[i - 1].style.left;
+    $("#" + snake[i].id).animate({left:snake[i - 1].style.left, top:snake[i - 1].style.top}, {duration: animationTime - 20, easing: 'linear'});
+    //snake[i].style.top = snake[i - 1].style.top;
   }
+}
+
+function snakeOptions() {
+  $("#optionsContent").html(`
+    <input type="checkbox">
+  `);
 }
 
 $(function() {

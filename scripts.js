@@ -10,8 +10,8 @@ var map = [];
 var snake = [];
 var direction = [1, 0];
 var lastMovedDirection = direction;
-const mapHeight = 15;
-const mapWidth = 15;
+var mapHeight = 13;
+var mapWidth = 13;
 var snakePositions = [];
 var snakePosition = [5, 6];
 var endSnakePosition = [3, 6];
@@ -34,6 +34,16 @@ function die(delay = 1000, forceEnd = false) {
   setTimeout(function() {
     document.getElementById("dimBox").style.display = "";
   }, delay);
+}
+
+window.onresize = onResize;
+
+function onResize() {
+  if (!dead) {
+    setTimeout(onResize, 500);
+    return;
+  }
+  loadCookies();
 }
 
 document.onkeydown = function(e) {
@@ -89,22 +99,39 @@ function printSnakeBlockCount() {
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
+  if (parts.length === 2)
+    return parts
+      .pop()
+      .split(";")
+      .shift();
 }
 
-function checkSchoolHours() {
-  if (getCookie('disguiseTab') == 'off') {
+function checkSchoolHours(force = false) {
+  if (getCookie("disguiseTab") == "off" && !force) {
     return;
   }
 
   let date = new Date();
-  if (date.getDay() != 0 && date.getDay() != 6) {
+  if (
+    (date.getDay() != 0 && date.getDay() != 6) ||
+    getCookie("disguiseTab") == "force" ||
+    force
+  ) {
     if (
       (date.getHours() > 7 && date.getHours() < 14) ||
       (date.getHours() == 7 && date.getMinutes() >= 40) ||
-      (date.getHours() == 14 && date.getMinutes() <= 40)
+      (date.getHours() == 14 && date.getMinutes() <= 40) ||
+      getCookie("disguiseTab") == "force" ||
+      force
     ) {
-      if (getCookie('disguiseTab') == 'on' || confirm("You are playing snake during school hours.\nWould you like to disguise this tab as a google classroom window?")) {
+      if (
+        getCookie("disguiseTab") == "force" ||
+        force ||
+        getCookie("disguiseTab") == "on" ||
+        confirm(
+          "You are playing snake during school hours.\nWould you like to disguise this tab as a google classroom window?"
+        )
+      ) {
         document.getElementById("icon").href = classroomIconUrl;
         document.getElementById("tabTitle").innerHTML = "Classes";
       }
@@ -219,15 +246,15 @@ function start() {
   document.getElementById("dimBox").style.display = "none";
   $("#countdownNumbers").show();
   $("#countdownBox").show();
-  $("#countdownNumbers").html('3');
+  $("#countdownNumbers").html("3");
   $("#countdownNumbers").fadeOut(1000, () => {
-    $("#countdownNumbers").html('2');
+    $("#countdownNumbers").html("2");
     $("#countdownNumbers").show();
-    
+
     $("#countdownNumbers").fadeOut(1000, () => {
-      $("#countdownNumbers").html('1');
+      $("#countdownNumbers").html("1");
       $("#countdownNumbers").show();
-      
+
       $("#countdownNumbers").fadeOut(1000, () => {
         $("#countdownBox").fadeOut(1000);
         interval = setInterval(move, delay);
@@ -257,24 +284,47 @@ function move() {
   ) {
     // check if snake is in path
     if (
-      (map[coordinateToIndex(snakePosition[0] + 0,snakePosition[1] + 1)] == 's' || 
-       !coordinateIsWithin(snakePosition[0] + 0,snakePosition[1] + 1,mapWidth,mapHeight)) && // [0, 1]
-      (map[coordinateToIndex(snakePosition[0] + 0,snakePosition[1] + -1)] == 's' || 
-      !coordinateIsWithin(snakePosition[0] + 0,snakePosition[1] + -1,mapWidth,mapHeight)) && // [0, -1]
-      (map[coordinateToIndex(snakePosition[0] + 1,snakePosition[1] + 0)] == 's' || 
-      !coordinateIsWithin(snakePosition[0] + 1,snakePosition[1] + 0,mapWidth,mapHeight)) && // [1, 0]
-      (map[coordinateToIndex(snakePosition[0] + -1,snakePosition[1] + 0)] == 's' || 
-      !coordinateIsWithin(snakePosition[0] + -1,snakePosition[1] + 0,mapWidth,mapHeight)) // [-1, 0]
+      (map[coordinateToIndex(snakePosition[0] + 0, snakePosition[1] + 1)] ==
+        "s" ||
+        !coordinateIsWithin(
+          snakePosition[0] + 0,
+          snakePosition[1] + 1,
+          mapWidth,
+          mapHeight
+        )) && // [0, 1]
+      (map[coordinateToIndex(snakePosition[0] + 0, snakePosition[1] + -1)] ==
+        "s" ||
+        !coordinateIsWithin(
+          snakePosition[0] + 0,
+          snakePosition[1] + -1,
+          mapWidth,
+          mapHeight
+        )) && // [0, -1]
+      (map[coordinateToIndex(snakePosition[0] + 1, snakePosition[1] + 0)] ==
+        "s" ||
+        !coordinateIsWithin(
+          snakePosition[0] + 1,
+          snakePosition[1] + 0,
+          mapWidth,
+          mapHeight
+        )) && // [1, 0]
+      (map[coordinateToIndex(snakePosition[0] + -1, snakePosition[1] + 0)] ==
+        "s" ||
+        !coordinateIsWithin(
+          snakePosition[0] + -1,
+          snakePosition[1] + 0,
+          mapWidth,
+          mapHeight
+        )) // [-1, 0]
     ) {
-      die(1000, true);  
+      die(1000, true);
     }
     die();
     return;
   } else if (spaceAhead == "f") {
     score++;
     document.getElementById("title").innerHTML =
-      "Snake Score: " +
-      score.toString();
+      "Snake Score: " + score.toString();
     blocksToAdd++;
     removeFood([
       snakePosition[0] + direction[0],
@@ -350,9 +400,12 @@ function snakeOptions() {
     <label for="deathOption" onclick="updateCheckOption(this, 'enableDeath')">Enable Death</label><input id="deathOption" onclick="updateCheckOption(this, 'enableDeath')" type="checkbox"><br>
     <label for="speedOption">Speed</label><input value="350" max="500" min="0" onchange="updateSliderOption(this, 'speed')" id="speedOption" type="range"><br>
   `);
-  document.getElementById("choppyOption").checked = (getCookie("smoothSnake") == "off" ? false : true);
-  document.getElementById("deathOption").checked = (getCookie("enableDeath") == "off" ? false : true);
-  document.getElementById("speedOption").value = (getCookie("speed") === undefined ? "350" : getCookie("speed"));
+  document.getElementById("choppyOption").checked =
+    getCookie("smoothSnake") == "off" ? false : true;
+  document.getElementById("deathOption").checked =
+    getCookie("enableDeath") == "off" ? false : true;
+  document.getElementById("speedOption").value =
+    getCookie("speed") === undefined ? "350" : getCookie("speed");
   document.getElementById("snakeOptions").style.backgroundColor = "gray";
   document.getElementById("fruitOptions").style.backgroundColor = "";
   document.getElementById("mapOptions").style.backgroundColor = "";
@@ -361,7 +414,7 @@ function snakeOptions() {
 
 function fruitOptions() {
   $("#optionsContent").html(`
-    fruit options
+    <label for="fruitCount">Fruit Count</label><input id="fruitCount" onchange="updateSelectOption(this, 'fruitCount')" type="number"><br>
   `);
   document.getElementById("snakeOptions").style.backgroundColor = "";
   document.getElementById("fruitOptions").style.backgroundColor = "gray";
@@ -371,8 +424,17 @@ function fruitOptions() {
 
 function mapOptions() {
   $("#optionsContent").html(`
-    map options
+    <label for="mapWidth">Map Width</label><input id="mapWidth" onchange="updateSelectOption(this, 'mapWidth')" type="number"><input id="enableWidth" onclick="updateCheckOption(this, 'enableWidth')" type="checkbox"><br> <label for="mapHeight">Map Height</label><input id="mapHeight" onchange="updateSelectOption(this, 'mapHeight')" type="number"><input id="enableHeight" onclick="updateCheckOption(this, 'enableHeight')" type="checkbox"><br>
   `);
+  loadCookies();
+  document.getElementById("enableWidth").checked =
+    getCookie("enableWidth") == "on" ? true : false;
+  document.getElementById("enableHeight").checked =
+    getCookie("enableHeight") == "on" ? true : false;
+  document.getElementById("mapWidth").value =
+    getCookie("mapWidth") === undefined ? 13 : getCookie("mapWidth");
+  document.getElementById("mapHeight").value =
+    getCookie("mapHeight") === undefined ? 13 : getCookie("mapHeight");
   document.getElementById("snakeOptions").style.backgroundColor = "";
   document.getElementById("fruitOptions").style.backgroundColor = "";
   document.getElementById("mapOptions").style.backgroundColor = "gray";
@@ -384,9 +446,11 @@ function otherOptions() {
     <br style="line-height: 15px"><label style="margin-top: 30px;" for="disguiseTab" onclick="updateCheckOption(this, 'disguiseTab')">Disguise Tab</label>
     <select id="disguiseTab" onchange="updateSelectOption(this, 'disguiseTab')">
       <option value="on">Automatic</option>
+      <option value="force">Always</option>
       <option value="off">Never</option>
       <option value="undefined">Ask At School</option>
     </select>
+    <button type="button" class="start" onclick="checkSchoolHours(true)">Disguise Now</button>
   `);
   document.getElementById("disguiseTab").value = getCookie("disguiseTab");
   document.getElementById("snakeOptions").style.backgroundColor = "";
@@ -411,14 +475,41 @@ function updateCheckOption(object, optionName) {
 }
 
 function loadCookies() {
+  if (getCookie("enableWidth") != "on") {
+    mapWidth = Math.floor((window.innerWidth - 50) / 30);
+  } else {
+    mapWidth = getCookie("mapWidth") === undefined ? 13 : getCookie("mapWidth");
+  }
+
+  if (getCookie("enableHeight") != "on") {
+    mapHeight = Math.floor((window.innerHeight - 175) / 30);
+  } else {
+    mapHeight =
+      getCookie("mapHeight") === undefined ? 13 : getCookie("mapHeight");
+  }
+
+  document.getElementById("backgroundBox").style.width =
+    (mapWidth * 30).toString() + "px";
+  document.getElementById("countdownBox").style.width =
+    (mapWidth * 30).toString() + "px";
+  document.getElementById("backgroundBox").style.height =
+    (mapHeight * 30).toString() + "px";
+  document.getElementById("countdownBox").style.height =
+    (mapHeight * 30).toString() + "px";
+  document.getElementById("countdownNumbers").style.marginTop =
+    "calc(" + ((mapHeight * 30) / 2).toString() + "px - (155px / 2))";
+  document.getElementById("backgroundBox").style.marginLeft =
+    "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
+  document.getElementById("countdownBox").style.marginLeft =
+    "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
   delay = 500 - (getCookie("speed") === undefined ? 350 : getCookie("speed"));
-  animationTime = (getCookie('smoothSnake') == 'off' ? 0 : delay);
-  deathAllowed = (getCookie('enableDeath') == 'off' ? false : true);
+  animationTime = getCookie("smoothSnake") == "off" ? 0 : delay;
+  deathAllowed = getCookie("enableDeath") == "off" ? false : true;
 }
 
 $(function() {
   loadCookies();
   checkSchoolHours();
-  snakeOptions();  
+  snakeOptions();
   reset();
 });

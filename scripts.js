@@ -26,6 +26,8 @@ var dead;
 var deathAllowed;
 var numFood;
 var gameMode;
+var canvas;
+var context;
 
 document.addEventListener("touchstart", handleTouchStart, false);
 
@@ -633,6 +635,11 @@ function normal() {
     snakePositions[i] = snakePositions[i - 1];
   }
   //printMap();
+
+  /*context.clearRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = 'rgb(255, 0, 0)';
+  //context.fillRect(parseInt(snake[0].style.left, 10), parseInt(snake[0].style.top, 10), 30, 30);
+  context.fillRect(0, 0, 30, 30);*/
 }
 
 function snakeOptions() {
@@ -756,18 +763,26 @@ function loadCookies() {
 
   document.getElementById("backgroundBox").style.width =
     (mapWidth * 30).toString() + "px";
-  document.getElementById("countdownBox").style.width =
-    (mapWidth * 30).toString() + "px";
   document.getElementById("backgroundBox").style.height =
     (mapHeight * 30).toString() + "px";
-  document.getElementById("countdownBox").style.height =
-    (mapHeight * 30).toString() + "px";
-  document.getElementById("countdownNumbers").style.marginTop =
-    "calc(" + ((mapHeight * 30) / 2).toString() + "px - (155px / 2))";
   document.getElementById("backgroundBox").style.marginLeft =
     "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
+
+  document.getElementById("countdownBox").style.width =
+    (mapWidth * 30).toString() + "px";
+  document.getElementById("countdownBox").style.height =
+    (mapHeight * 30).toString() + "px";
   document.getElementById("countdownBox").style.marginLeft =
     "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
+
+  /*canvas.height = (mapHeight * 30).toString() + "px";
+  canvas.width = (mapWidth * 30).toString() + "px";
+  canvas.style.marginLeft = "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
+  canvas.style.marginLeft = "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";*/
+
+  document.getElementById("countdownNumbers").style.marginTop =
+    "calc(" + ((mapHeight * 30) / 2).toString() + "px - (155px / 2))";
+
   gameMode =
     getCookie("gameMode") === undefined ? "normal" : getCookie("gameMode");
   delay = 500 - (getCookie("speed") === undefined ? 350 : getCookie("speed"));
@@ -777,6 +792,8 @@ function loadCookies() {
 }
 
 $(function() {
+  //canvas = document.getElementById("canvas");
+  //context = canvas.getContext('2d');
   loadCookies();
   checkSchoolHours();
   snakeOptions();

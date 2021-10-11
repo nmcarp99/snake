@@ -1,74 +1,81 @@
 <!DOCTYPE html>
-<head>
-  <title id="tabTitle">Snake</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link
-    rel="icon"
-    href="https://cdn.glitch.me/61845a2e-50dd-416e-b27c-f6c4d479d0ad%2Ffavicon.ico?v=1633638312872"
-    id="icon"
-  />
-  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-  <script src="scripts.js"></script>
-</head>
-<body>
-  <h1 id="title">Snake</h1>
-  <p>
-    Use the arrow keys or WASD to control the snake. Collect the fruits to earn
-    ponits.
-  </p>
-  <div class="backgroundBox" id="backgroundBox"></div>
-  <div
-    style="background-color: #00000050"
-    class="backgroundBox"
-    id="countdownBox"
-  >
-    <h1 id="countdownNumbers" class="countdownNumbers">3</h1>
-  </div>
-  <p style="position: absolute; right: 0" id="fdsa"></p>
-  <div class="dimBox" id="dimBox">
-    <div class="optionsBox">
-      <h1>
-        Options
-      </h1>
-      <div>
-        <button
-          id="snakeOptions"
-          onclick="snakeOptions()"
-          type="button"
-          style="margin-left: 30px; background-color: gray"
-          class="optionsTab"
-        >
-          Snake
-        </button>
-        <button
-          id="fruitOptions"
-          onclick="fruitOptions()"
-          type="button"
-          class="optionsTab"
-        >
-          Fruit
-        </button>
-        <button
-          id="mapOptions"
-          onclick="mapOptions()"
-          type="button"
-          class="optionsTab"
-        >
-          Map
-        </button>
-        <button
-          id="otherOptions"
-          onclick="otherOptions()"
-          type="button"
-          class="optionsTab"
-        >
-          Other
+<html>
+  <head>
+    <title id="tabTitle">Snake</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="icon"
+      href="https://cdn.glitch.me/61845a2e-50dd-416e-b27c-f6c4d479d0ad%2Ffavicon.ico?v=1633638312872"
+      id="icon"
+    />
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="scripts.js"></script>
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3013647233787715"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <h1 id="title">Snake</h1>
+    <p>
+      Use the arrow keys or WASD to control the snake. Collect the fruits to
+      earn ponits.
+    </p>
+    <div class="backgroundBox" id="backgroundBox"></div>
+    <div
+      style="background-color: #00000050"
+      class="backgroundBox"
+      id="countdownBox"
+    >
+      <h1 id="countdownNumbers" class="countdownNumbers">3</h1>
+    </div>
+    <p style="position: absolute; right: 0" id="fdsa"></p>
+    <div class="dimBox" id="dimBox">
+      <div class="optionsBox">
+        <h1>
+          Options
+        </h1>
+        <div>
+          <button
+            id="snakeOptions"
+            onclick="snakeOptions()"
+            type="button"
+            style="margin-left: 30px; background-color: gray"
+            class="optionsTab"
+          >
+            Snake
+          </button>
+          <button
+            id="fruitOptions"
+            onclick="fruitOptions()"
+            type="button"
+            class="optionsTab"
+          >
+            Fruit
+          </button>
+          <button
+            id="mapOptions"
+            onclick="mapOptions()"
+            type="button"
+            class="optionsTab"
+          >
+            Map
+          </button>
+          <button
+            id="otherOptions"
+            onclick="otherOptions()"
+            type="button"
+            class="optionsTab"
+          >
+            Other
+          </button>
+        </div>
+        <div class="optionsContent" id="optionsContent"></div>
+        <button type="button" class="start" onclick="start()">
+          Play
         </button>
       </div>
-      <div class="optionsContent" id="optionsContent"></div>
-      <button type="button" class="start" onclick="start()">
-        Play
-      </button>
     </div>
-  </div>
-</body>
+  </body>
+</html>

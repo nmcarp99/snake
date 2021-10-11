@@ -6,24 +6,84 @@
 const classroomIconUrl =
   "https://cdn.glitch.me/61845a2e-50dd-416e-b27c-f6c4d479d0ad%2Ffavicon.png?v=1633720408561";
 
-var map = [];
-var snake = [];
-var direction = [1, 0];
-var lastMovedDirection = direction;
-var mapHeight = 13;
-var mapWidth = 13;
-var snakePositions = [];
-var snakePosition = [5, 6];
-var endSnakePosition = [3, 6];
-var foods = [];
 const startSnakeLength = 3;
-var blocksToAdd = 0;
-var score = 0;
+var map;
+var snake;
+var direction;
+var lastMovedDirection;
+var mapHeight;
+var mapWidth;
+var snakePositions;
+var snakePosition;
+var endSnakePosition;
+var foods;
+var blocksToAdd;
+var score;
 var interval;
 var delay;
 var animationTime;
-var dead = true;
+var dead;
 var deathAllowed;
+var numFood;
+var gameMode;
+
+document.addEventListener("touchstart", handleTouchStart, false);
+
+document.addEventListener("touchmove", handleTouchMove, false);
+
+var xDown = null;
+
+var yDown = null;
+
+function getTouches(evt) {
+  return (
+    evt.touches || evt.originalEvent.touches // browser API
+  ); // jQuery
+}
+
+function handleTouchStart(evt) {
+  const firstTouch = getTouches(evt)[0];
+
+  xDown = firstTouch.clientX;
+
+  yDown = firstTouch.clientY;
+}
+
+function handleTouchMove(evt) {
+  if (!xDown || !yDown) {
+    return;
+  }
+
+  var xUp = evt.touches[0].clientX;
+
+  var yUp = evt.touches[0].clientY;
+
+  var xDiff = xDown - xUp;
+
+  var yDiff = yDown - yUp;
+
+  if (Math.abs(xDiff) > Math.abs(yDiff)) {
+    /*most significant*/
+
+    if (xDiff > 0) {
+      left();
+    } else {
+      right();
+    }
+  } else {
+    if (yDiff > 0) {
+      up();
+    } else {
+      down();
+    }
+  }
+
+  /* reset values */
+
+  xDown = null;
+
+  yDown = null;
+}
 
 function die(delay = 1000, forceEnd = false) {
   if (dead || (!deathAllowed && !forceEnd)) {
@@ -33,6 +93,7 @@ function die(delay = 1000, forceEnd = false) {
   clearInterval(interval);
   setTimeout(function() {
     document.getElementById("dimBox").style.display = "";
+    reset();
   }, delay);
 }
 
@@ -46,33 +107,65 @@ function onResize() {
   loadCookies();
 }
 
+window.addEventListener("blur", () => {
+  if (!dead) {
+    clearInterval(interval);
+  }
+});
+window.addEventListener("focus", () => {
+  if (!dead) {
+    interval = setInterval(move, delay);
+  }
+});
+
+function right() {
+  if (direction[0] == 1 && direction[1] == 0) return true;
+  if (lastMovedDirection[0] != -1 || lastMovedDirection[1] != 0)
+    direction = [1, 0];
+}
+
+function up() {
+  if (direction[0] == 0 && direction[1] == -1) return true;
+  if (lastMovedDirection[0] != 0 || lastMovedDirection[1] != 1)
+    direction = [0, -1];
+}
+
+function left() {
+  if (
+    (direction[0] == -1 && direction[1] == 0) ||
+    (direction[0] == 0 && direction[1] == 0)
+  )
+    return true;
+  if (lastMovedDirection[0] != 1 || lastMovedDirection[1] != 0)
+    direction = [-1, 0];
+}
+
+function down() {
+  if (direction[0] == 0 && direction[1] == 1) return true; // check if already in direction
+  if (lastMovedDirection[0] != 0 || lastMovedDirection[1] != -1)
+    direction = [0, 1]; // check if not turning 180 degrees
+}
+
 document.onkeydown = function(e) {
   if (dead) {
     return;
   }
   switch (e.code) {
     case "ArrowDown":
-      if (direction[0] == 0 && direction[1] == 1) return; // check if already in direction
-      if (lastMovedDirection[0] != 0 || lastMovedDirection[1] != -1)
-        direction = [0, 1]; // check if not turning 180 degrees
+      if (down()) return;
       break;
     case "ArrowRight":
-      if (direction[0] == 1 && direction[1] == 0) return;
-      if (lastMovedDirection[0] != -1 || lastMovedDirection[1] != 0)
-        direction = [1, 0];
+      if (right()) return;
       break;
     case "ArrowUp":
-      if (direction[0] == 0 && direction[1] == -1) return;
-      if (lastMovedDirection[0] != 0 || lastMovedDirection[1] != 1)
-        direction = [0, -1];
+      if (up()) return;
       break;
     case "ArrowLeft":
-      if (direction[0] == -1 && direction[1] == 0) return;
-      if (lastMovedDirection[0] != 1 || lastMovedDirection[1] != 0)
-        direction = [-1, 0];
+      if (left()) return;
       break;
     case "Escape":
       die(0, true);
+      return;
       break;
     default:
       return;
@@ -157,15 +250,14 @@ function reset() {
   document.getElementById("backgroundBox").innerHTML = "";
   map = [];
   snake = [];
-  direction = [1, 0];
-  lastMovedDirection = direction;
+  direction = [0, 0];
+  lastMovedDirection = [0, 0];
   snakePositions = [];
   snakePosition = [5, 6];
   endSnakePosition = [3, 6];
   foods = [];
   blocksToAdd = 0;
   score = 0;
-  dead = false;
 
   for (var i = 0; i < mapHeight; i++) {
     for (var j = 0; j < mapWidth; j++) {
@@ -188,8 +280,6 @@ function reset() {
     snake.push(newSnakeBlock);
     snakePositions.push([snakePosition[0] - i, snakePosition[1]]);
   }
-
-  spawnFood();
 }
 
 function getRandomInt(min, max) {
@@ -242,9 +332,9 @@ function coordinateIsWithin(x, y, width, height) {
 }
 
 function start() {
-  reset();
+  dead = false;
   document.getElementById("dimBox").style.display = "none";
-  $("#countdownNumbers").show();
+  /*$("#countdownNumbers").show();
   $("#countdownBox").show();
   $("#countdownNumbers").html("3");
   $("#countdownNumbers").fadeOut(1000, () => {
@@ -256,14 +346,165 @@ function start() {
       $("#countdownNumbers").show();
 
       $("#countdownNumbers").fadeOut(1000, () => {
-        $("#countdownBox").fadeOut(1000);
-        interval = setInterval(move, delay);
+        $("#countdownBox").fadeOut(1000);*/
+        $("#countdownNumbers").hide();
+        $("#countdownBox").hide();
+        interval = setInterval(move, delay);/*
       });
     });
-  });
+  });*/
+
+  for (var i = 0; i < numFood; i++) {
+    spawnFood();
+  }
 }
 
 function move() {
+  switch (gameMode) {
+    case "normal":
+      normal();
+      break;
+    case "infinite":
+      infinite();
+      break;
+    default:
+      break;
+  }
+}
+
+function infinite() {
+  if (direction[0] == 0 && direction[1] == 0) return;
+  //alert(snakePositions);
+  lastMovedDirection = direction;
+  let spaceAhead =
+    map[
+      coordinateToIndex(
+        snakePosition[0] + direction[0],
+        snakePosition[1] + direction[1]
+      )
+    ];
+  if (spaceAhead == "s") {
+    // check if snake is in path
+    if (
+      map[coordinateToIndex(snakePosition[0] + 0, snakePosition[1] + 1)] ==
+        "s" && // [0, 1]
+      map[coordinateToIndex(snakePosition[0] + 0, snakePosition[1] + -1)] ==
+        "s" && // [0, -1]
+      map[coordinateToIndex(snakePosition[0] + 1, snakePosition[1] + 0)] ==
+        "s" && // [1, 0]
+      map[coordinateToIndex(snakePosition[0] + -1, snakePosition[1] + 0)] == "s" // [-1, 0]
+    ) {
+      die(1000, true);
+    }
+    die();
+    return;
+  } else if (spaceAhead == "f") {
+    score++;
+    document.getElementById("title").innerHTML =
+      "Snake Score: " + score.toString();
+    blocksToAdd++;
+    removeFood([
+      snakePosition[0] + direction[0],
+      snakePosition[1] + direction[1]
+    ]);
+    spawnFood();
+  }
+
+  for (var i = snake.length - 1; i >= 0; i--) {
+    $("#" + i).stop();
+    if (i == 0) {
+      // check if we are moving the head
+      snakePositions[i] = [
+        snakePositions[i][0] + direction[0],
+        snakePositions[i][1] + direction[1]
+      ];
+
+      snakePosition = [
+        snakePosition[0] + direction[0],
+        snakePosition[1] + direction[1]
+      ];
+
+      // check if outside map in each coordinate, then set coordinate to other side
+      if (snakePositions[i][0] == parseInt(mapWidth, 10)) {
+        snakePositions[i][0] = 0;
+        snakePosition[0] = 0;
+      } else if (snakePositions[i][0] == -1) {
+        snakePositions[i][0] = mapWidth - 1;
+        snakePosition[0] = mapWidth - 1;
+      }
+      
+      if (snakePositions[i][1] == parseInt(mapHeight, 10)) {
+        snakePositions[i][1] = 0;
+        snakePosition[1] = 0;
+      } else if (snakePositions[i][1] == -1) {
+        snakePositions[i][1] = mapHeight - 1;
+        snakePosition[1] = mapHeight - 1;
+      }
+
+      let newLeftPosition = snakePositions[i][0] * 30;
+      let newTopPosition = snakePositions[i][1] * 30;
+      //snake[i].style.left = newLeftPosition + "px";
+
+      if (Math.abs(newLeftPosition - parseInt(snake[i].style.left, 10)) >= 30 * 2 || Math.abs(newTopPosition - parseInt(snake[i].style.top, 10)) >= 30 * 2) {
+        document.getElementById(snake[i].id).style.top = newTopPosition + "px";
+        document.getElementById(snake[i].id).style.left = newLeftPosition + "px";
+      } else {
+        //alert(Math.abs(newLeftPosition - parseInt(snake[i].style.left, 10)));
+        $("#" + snake[i].id).animate(
+          { left: newLeftPosition + "px", top: newTopPosition + "px" },
+          { duration: animationTime, easing: "linear" }
+        );
+      }
+      //snake[i].style.top = newTopPosition + "px";
+      //$("#" + snake[i].id).animate({top:newTopPosition + 'px'}, {duration: 100, easing: 'linear'});
+
+      map[coordinateToIndex(snakePosition[0], snakePosition[1])] = "s";
+
+      continue;
+    } else if (i == snake.length - 1) {
+      // check if we are moving the tail
+      if (blocksToAdd == 0) {
+        // check for block queue
+        map[
+          coordinateToIndex(
+            snakePositions[snakePositions.length - 1][0],
+            snakePositions[snakePositions.length - 1][1]
+          )
+        ] = "e"; // set the tail's position to empty on the map
+        endSnakePosition = snakePositions[snake.length - 1];
+        //alert(endSnakePosition[0] + ', ' + endSnakePosition[1] + ': ' + coordinateToIndex(endSnakePosition[0], endSnakePosition[1]));
+      } else {
+        let newSnakeBlock = document.createElement("div");
+        newSnakeBlock.setAttribute("class", "snakeBlock");
+        newSnakeBlock.style.left = snake[i].style.left;
+        newSnakeBlock.style.top = snake[i].style.top;
+        newSnakeBlock.id = snake.length;
+        document.getElementById("backgroundBox").appendChild(newSnakeBlock);
+        snake.push(newSnakeBlock);
+        snakePositions.push(snakePositions[i]);
+        blocksToAdd--;
+        endSnakePosition = snakePositions[i];
+      }
+    }
+
+    //snake[i].style.left = snake[i - 1].style.left;
+    if (Math.abs(parseInt(snake[i - 1].style.left, 10) - parseInt(snake[i].style.left, 10)) >= 30 * 2 || parseInt(Math.abs(snake[i - 1].style.top, 10) - parseInt(snake[i].style.top, 10)) >= 30 * 2) {
+        document.getElementById(snake[i].id).style.top = parseInt(snake[i - 1].style.top, 10) + "px";
+        document.getElementById(snake[i].id).style.left = parseInt(snake[i - 1].style.left, 10) + "px";
+    } else {
+      $("#" + snake[i].id).animate(
+        { left: snake[i - 1].style.left, top: snake[i - 1].style.top },
+        { duration: animationTime, easing: "linear" }
+      );
+    }
+    //snake[i].style.top = snake[i - 1].style.top;
+    snakePositions[i] = snakePositions[i - 1];
+  }
+  //printMap();
+}
+
+function normal() {
+  if (direction[0] == 0 && direction[1] == 0) return;
   //alert(snakePositions);
   lastMovedDirection = direction;
   let spaceAhead =
@@ -414,8 +655,10 @@ function snakeOptions() {
 
 function fruitOptions() {
   $("#optionsContent").html(`
-    <label for="fruitCount">Fruit Count</label><input id="fruitCount" onchange="updateSelectOption(this, 'fruitCount')" type="number"><br>
+    <label for="fruitCount">Fruit Count</label><input min="1" max = "1000" id="fruitCount" onchange="updateSelectOption(this, 'fruitCount')" type="number"><br>
   `);
+  document.getElementById("fruitCount").value =
+    getCookie("fruitCount") === undefined ? 1 : getCookie("fruitCount");
   document.getElementById("snakeOptions").style.backgroundColor = "";
   document.getElementById("fruitOptions").style.backgroundColor = "gray";
   document.getElementById("mapOptions").style.backgroundColor = "";
@@ -424,9 +667,17 @@ function fruitOptions() {
 
 function mapOptions() {
   $("#optionsContent").html(`
-    <label for="mapWidth">Map Width</label><input id="mapWidth" onchange="updateSelectOption(this, 'mapWidth')" type="number"><input id="enableWidth" onclick="updateCheckOption(this, 'enableWidth')" type="checkbox"><br> <label for="mapHeight">Map Height</label><input id="mapHeight" onchange="updateSelectOption(this, 'mapHeight')" type="number"><input id="enableHeight" onclick="updateCheckOption(this, 'enableHeight')" type="checkbox"><br>
+    <label for="mapWidth">Map Width</label><input min="10" max="10000" id="mapWidth" onchange="updateSelectOption(this, 'mapWidth', mapOptions)" type="number"><input id="enableWidth" onclick="updateCheckOption(this, 'enableWidth')" type="checkbox"><br>
+    <label for="mapHeight">Map Height</label><input min="10" max="10000" id="mapHeight" onchange="updateSelectOption(this, 'mapHeight', mapOptions)" type="number"><input id="enableHeight" onclick="updateCheckOption(this, 'enableHeight')" type="checkbox"><br>
+    <br style="line-height: 15px"><label style="margin-top: 30px;" for="gameMode">Game Mode</label>
+    <select id="gameMode" onchange="updateSelectOption(this, 'gameMode')">
+      <option value="normal">Normal</option>
+      <option value="infinite">Infinite</option>
+    </select>
   `);
   loadCookies();
+  document.getElementById("gameMode").value =
+    getCookie("gameMode") === undefined ? "normal" : getCookie("gameMode");
   document.getElementById("enableWidth").checked =
     getCookie("enableWidth") == "on" ? true : false;
   document.getElementById("enableHeight").checked =
@@ -459,7 +710,22 @@ function otherOptions() {
   document.getElementById("otherOptions").style.backgroundColor = "gray";
 }
 
-function updateSelectOption(object, optionName) {
+function updateSelectOption(object, optionName, reloadPage) {
+  if (
+    object.value < parseInt(object.getAttribute("min"), 10) ||
+    object.value > parseInt(object.getAttribute("max"), 10)
+  ) {
+    alert(
+      "Value must be between " +
+        object.getAttribute("min") +
+        " and " +
+        object.getAttribute("max") +
+        "."
+    );
+    reloadPage();
+    return;
+  }
+
   document.cookie = optionName + "=" + object.value;
   loadCookies();
 }
@@ -502,9 +768,12 @@ function loadCookies() {
     "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
   document.getElementById("countdownBox").style.marginLeft =
     "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
+  gameMode =
+    getCookie("gameMode") === undefined ? "normal" : getCookie("gameMode");
   delay = 500 - (getCookie("speed") === undefined ? 350 : getCookie("speed"));
   animationTime = getCookie("smoothSnake") == "off" ? 0 : delay;
   deathAllowed = getCookie("enableDeath") == "off" ? false : true;
+  numFood = getCookie("fruitCount") === undefined ? 1 : getCookie("fruitCount");
 }
 
 $(function() {

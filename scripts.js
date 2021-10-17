@@ -32,6 +32,8 @@ var snakeMode;
 var snakeWidth = 15;
 var snakeColor = "#99FF99";
 var snakeBorderColor = "#90EE90";
+var foodColor = "#87CEFA";
+var foodBorderColor = "#91B8C5";
 
 document.addEventListener("touchstart", handleTouchStart, false);
 
@@ -327,6 +329,8 @@ function spawnFood() {
 
   let newFoodBlock = document.createElement("div");
   newFoodBlock.setAttribute("class", "foodBlock");
+  newFoodBlock.style.backgroundColor = foodColor;
+  newFoodBlock.style.borderColor = foodBorderColor;
   newFoodBlock.style.left = foodPosition[0] * 30 + "px";
   newFoodBlock.style.top = foodPosition[1] * 30 + "px";
   document.getElementById("foodBox").appendChild(newFoodBlock);
@@ -815,9 +819,15 @@ function snakeOptions() {
 function fruitOptions() {
   $("#optionsContent").html(`
     <label for="fruitCount">Fruit Count</label><input min="1" max = "1000" id="fruitCount" onchange="updateSelectOption(this, 'fruitCount')" type="number"><br>
+    <label for="fruitColorOption">Fruit Color</label><input value="#87CEFA" onchange="updateSliderOption(this, 'foodColor')" id="fruitColorOption" type="color"><br>
+    <label for="fruitBorderColorOption">Border Color</label><input value="#87CEFA" onchange="updateSliderOption(this, 'foodBorderColor')" id="fruitBorderColorOption" type="color"><br>
   `);
   document.getElementById("fruitCount").value =
     getCookie("fruitCount") === undefined ? 1 : getCookie("fruitCount");
+  document.getElementById("fruitColorOption").value = 
+    getCookie("foodColor") === undefined ? "#87CEFA" : getCookie("foodColor");
+  document.getElementById("fruitBorderColorOption").value = 
+    getCookie("foodBorderColor") === undefined ? "#91B8C5" : getCookie("foodBorderColor");
   document.getElementById("snakeOptions").style.backgroundColor = "";
   document.getElementById("fruitOptions").style.backgroundColor = "gray";
   document.getElementById("mapOptions").style.backgroundColor = "";
@@ -833,8 +843,11 @@ function mapOptions() {
       <option value="normal">Normal</option>
       <option value="infinite">Infinite</option>
     </select><br>
+    <label for="backgroundColorOption">Background Color</label><input value="#FFFFFF" onchange="updateSliderOption(this, 'backgroundColor')" id="backgroundColorOption" type="color"><br>
   `);
   loadCookies();
+  document.getElementById("backgroundColorOption").value = 
+    getCookie("backgroundColor") === undefined ? "#FFFFFF" : getCookie("backgroundColor");
   document.getElementById("gameMode").value =
     getCookie("gameMode") === undefined ? "normal" : getCookie("gameMode");
   document.getElementById("enableWidth").checked =
@@ -919,6 +932,11 @@ function loadCookies() {
   
   snakeColor = getCookie("snakeColor") === undefined ? "#99FF99" : getCookie("snakeColor");
   snakeBorderColor = getCookie("snakeBorderColor") === undefined ? "#90EE90" : getCookie("snakeBorderColor");
+  
+  foodColor = getCookie("foodColor") === undefined ? "#87CEFA" : getCookie("foodColor");
+  foodBorderColor = getCookie("foodBorderColor") === undefined ? "#91B8C5" : getCookie("foodBorderColor");
+  
+  document.getElementById("foodBox").style.backgroundColor = getCookie("backgroundColor") === undefined ? "#FFFFFF" : getCookie("backgroundColor");
   
   if (getCookie("snakeMode") === undefined || getCookie("snakeMode") == "normal") {
     snakeMode = "normal";

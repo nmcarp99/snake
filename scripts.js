@@ -40,6 +40,10 @@ var xDown = null;
 
 var yDown = null;
 
+function jimmyjohns() {
+  alert("Call (269) 447-2921 for Jimmy Johns! (#notsponsored)");
+}
+
 function getTouches(evt) {
   return (
     evt.touches || evt.originalEvent.touches // browser API

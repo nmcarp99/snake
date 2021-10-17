@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <!-- SEO Meta Tags -->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content="Play Snake at School Unblocked with Disguising Options.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
     <title id="tabTitle">Snake</title>
     <link rel="stylesheet" href="styles.css" />
     <link
@@ -17,13 +22,16 @@
     ></script>
   </head>
   <body>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSftvN0OwCHkVrK3FGaj1YwWr3ZwhWLMmucAZO8W2K3DIhVKlg/viewform?usp=sf_link" id="topLeftLink" target="_blank">Suggest a New Feature!</a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeKWSZ3uxsq3VISO0JmZrJI3E8lHYtLSLNbyvbF5hNxOkmizg/viewform?usp=sf_link" id="topRightLink" target="_blank">Report an Issue</a>
     <h1 id="title">Snake</h1>
     <p>
       Use the arrow keys or WASD to control the snake. Collect the fruits to
       earn ponits.
     </p>
     <div class="backgroundBox" id="backgroundBox"></div>
-    <!--<canvas id="canvas" class="canvasBackgroundBox"></canvas>-->
+    <div class="backgroundBox" id="foodBox"></div>
+    <canvas id="canvas" width="450" height="450" class="canvasBackgroundBox"></canvas>
     <div
       style="background-color: #00000050"
       class="backgroundBox"

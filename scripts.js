@@ -22,12 +22,15 @@ var score;
 var interval;
 var delay;
 var animationTime;
-var dead;
+var dead = true;
 var deathAllowed;
 var numFood;
 var gameMode;
 var canvas;
 var context;
+var snakeMode;
+var snakeWidth = 15;
+var snakeColor = "#99FF99";
 
 document.addEventListener("touchstart", handleTouchStart, false);
 
@@ -250,6 +253,7 @@ function printMap() {
 function reset() {
   clearInterval(interval);
   document.getElementById("backgroundBox").innerHTML = "";
+  document.getElementById("foodBox").innerHTML = "";
   map = [];
   snake = [];
   direction = [0, 0];
@@ -274,14 +278,17 @@ function reset() {
     newSnakeBlock.setAttribute("class", "snakeBlock");
     newSnakeBlock.id = i.toString();
     if (i == 0) {
-      newSnakeBlock.style.backgroundColor = "#99FF99";
+      newSnakeBlock.style.backgroundColor = snakeColor;
     }
+    newSnakeBlock.style.backgroundColor = snakeColor;
     newSnakeBlock.style.left = ((snakePosition[0] - i) * 30).toString() + "px";
     newSnakeBlock.style.top = (snakePosition[1] * 30).toString() + "px";
     document.getElementById("backgroundBox").appendChild(newSnakeBlock);
     snake.push(newSnakeBlock);
     snakePositions.push([snakePosition[0] - i, snakePosition[1]]);
   }
+  
+  drawCanvas();
 }
 
 function getRandomInt(min, max) {
@@ -291,14 +298,23 @@ function getRandomInt(min, max) {
 }
 
 function spawnFood() {
-  var foodPosition = undefined;
+  let emptySpaces = [];
 
-  while (
-    foodPosition == undefined ||
-    map[coordinateToIndex(foodPosition[0], foodPosition[1])] != "e"
-  ) {
-    foodPosition = [getRandomInt(0, mapWidth), getRandomInt(0, mapHeight)];
+  for (var j = 0; j < mapHeight; j++) {
+    for (var i = 0; i < mapWidth; i++) {
+      if (map[coordinateToIndex(i, j)] == "e") {
+        emptySpaces.push([i, j]);
+      }
+    }
   }
+
+  if (emptySpaces.length == 0) {
+    alert("You have filled the map!");
+    die(0, true);
+    return;
+  }
+
+  let foodPosition = emptySpaces[getRandomInt(0, emptySpaces.length)];
 
   map[coordinateToIndex(foodPosition[0], foodPosition[1])] = "f";
 
@@ -306,7 +322,7 @@ function spawnFood() {
   newFoodBlock.setAttribute("class", "foodBlock");
   newFoodBlock.style.left = foodPosition[0] * 30 + "px";
   newFoodBlock.style.top = foodPosition[1] * 30 + "px";
-  document.getElementById("backgroundBox").appendChild(newFoodBlock);
+  document.getElementById("foodBox").appendChild(newFoodBlock);
   foods.push(newFoodBlock);
 }
 
@@ -349,14 +365,17 @@ function start() {
 
       $("#countdownNumbers").fadeOut(1000, () => {
         $("#countdownBox").fadeOut(1000);*/
-        $("#countdownNumbers").hide();
-        $("#countdownBox").hide();
-        interval = setInterval(move, delay);/*
+  $("#countdownNumbers").hide();
+  $("#countdownBox").hide();
+  interval = setInterval(move, delay); /*
       });
     });
   });*/
 
   for (var i = 0; i < numFood; i++) {
+    if (dead) {
+      break;
+    }
     spawnFood();
   }
 }
@@ -372,6 +391,18 @@ function move() {
     default:
       break;
   }
+}
+
+function touchingFood() {
+  score++;
+  document.getElementById("title").innerHTML =
+    "Snake Score: " + score.toString();
+  blocksToAdd++;
+  removeFood([
+    snakePosition[0] + direction[0],
+    snakePosition[1] + direction[1]
+  ]);
+  spawnFood();
 }
 
 function infinite() {
@@ -401,15 +432,7 @@ function infinite() {
     die();
     return;
   } else if (spaceAhead == "f") {
-    score++;
-    document.getElementById("title").innerHTML =
-      "Snake Score: " + score.toString();
-    blocksToAdd++;
-    removeFood([
-      snakePosition[0] + direction[0],
-      snakePosition[1] + direction[1]
-    ]);
-    spawnFood();
+    touchingFood();
   }
 
   for (var i = snake.length - 1; i >= 0; i--) {
@@ -434,7 +457,7 @@ function infinite() {
         snakePositions[i][0] = mapWidth - 1;
         snakePosition[0] = mapWidth - 1;
       }
-      
+
       if (snakePositions[i][1] == parseInt(mapHeight, 10)) {
         snakePositions[i][1] = 0;
         snakePosition[1] = 0;
@@ -447,9 +470,14 @@ function infinite() {
       let newTopPosition = snakePositions[i][1] * 30;
       //snake[i].style.left = newLeftPosition + "px";
 
-      if (Math.abs(newLeftPosition - parseInt(snake[i].style.left, 10)) >= 30 * 2 || Math.abs(newTopPosition - parseInt(snake[i].style.top, 10)) >= 30 * 2) {
+      if (
+        Math.abs(newLeftPosition - parseInt(snake[i].style.left, 10)) >=
+          30 * 2 ||
+        Math.abs(newTopPosition - parseInt(snake[i].style.top, 10)) >= 30 * 2
+      ) {
         document.getElementById(snake[i].id).style.top = newTopPosition + "px";
-        document.getElementById(snake[i].id).style.left = newLeftPosition + "px";
+        document.getElementById(snake[i].id).style.left =
+          newLeftPosition + "px";
       } else {
         //alert(Math.abs(newLeftPosition - parseInt(snake[i].style.left, 10)));
         $("#" + snake[i].id).animate(
@@ -478,6 +506,7 @@ function infinite() {
       } else {
         let newSnakeBlock = document.createElement("div");
         newSnakeBlock.setAttribute("class", "snakeBlock");
+        newSnakeBlock.style.backgroundColor = snakeColor;
         newSnakeBlock.style.left = snake[i].style.left;
         newSnakeBlock.style.top = snake[i].style.top;
         newSnakeBlock.id = snake.length;
@@ -490,9 +519,21 @@ function infinite() {
     }
 
     //snake[i].style.left = snake[i - 1].style.left;
-    if (Math.abs(parseInt(snake[i - 1].style.left, 10) - parseInt(snake[i].style.left, 10)) >= 30 * 2 || parseInt(Math.abs(snake[i - 1].style.top, 10) - parseInt(snake[i].style.top, 10)) >= 30 * 2) {
-        document.getElementById(snake[i].id).style.top = parseInt(snake[i - 1].style.top, 10) + "px";
-        document.getElementById(snake[i].id).style.left = parseInt(snake[i - 1].style.left, 10) + "px";
+    if (
+      Math.abs(
+        parseInt(snake[i - 1].style.left, 10) -
+          parseInt(snake[i].style.left, 10)
+      ) >=
+        30 * 2 ||
+      parseInt(
+        Math.abs(snake[i - 1].style.top, 10) - parseInt(snake[i].style.top, 10)
+      ) >=
+        30 * 2
+    ) {
+      document.getElementById(snake[i].id).style.top =
+        parseInt(snake[i - 1].style.top, 10) + "px";
+      document.getElementById(snake[i].id).style.left =
+        parseInt(snake[i - 1].style.left, 10) + "px";
     } else {
       $("#" + snake[i].id).animate(
         { left: snake[i - 1].style.left, top: snake[i - 1].style.top },
@@ -503,6 +544,8 @@ function infinite() {
     snakePositions[i] = snakePositions[i - 1];
   }
   //printMap();
+  
+  drawCanvas();
 }
 
 function normal() {
@@ -565,15 +608,7 @@ function normal() {
     die();
     return;
   } else if (spaceAhead == "f") {
-    score++;
-    document.getElementById("title").innerHTML =
-      "Snake Score: " + score.toString();
-    blocksToAdd++;
-    removeFood([
-      snakePosition[0] + direction[0],
-      snakePosition[1] + direction[1]
-    ]);
-    spawnFood();
+    touchingFood();
   }
 
   for (var i = snake.length - 1; i >= 0; i--) {
@@ -615,6 +650,7 @@ function normal() {
       } else {
         let newSnakeBlock = document.createElement("div");
         newSnakeBlock.setAttribute("class", "snakeBlock");
+        newSnakeBlock.style.backgroundColor = snakeColor;
         newSnakeBlock.style.left = snake[i].style.left;
         newSnakeBlock.style.top = snake[i].style.top;
         newSnakeBlock.id = snake.length;
@@ -635,25 +671,129 @@ function normal() {
     snakePositions[i] = snakePositions[i - 1];
   }
   //printMap();
+  
+  drawCanvas();
+}
 
-  /*context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = 'rgb(255, 0, 0)';
-  //context.fillRect(parseInt(snake[0].style.left, 10), parseInt(snake[0].style.top, 10), 30, 30);
-  context.fillRect(0, 0, 30, 30);*/
+function drawCanvas() {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.strokeStyle = snakeColor;
+  context.lineWidth = snakeWidth;
+  context.lineCap = "round";
+  
+
+  for (var i = 0; i < snake.length; i++) {
+    if (i == 0) {
+      context.beginPath();
+      
+      let startPoint = getLinePoint(snakePositions[0], lastMovedDirection, false);
+      let endPoint = getLinePoint(snakePositions[0], lastMovedDirection, true);
+      let directionFacing = lastMovedDirection;
+      
+      if (lastMovedDirection[0] == 0 && lastMovedDirection[1] == 0) {
+        directionFacing = [1, 0];
+      }
+            
+      context.moveTo(startPoint[0], startPoint[1]);
+      context.lineTo(endPoint[0] - directionFacing[0] * snakeWidth, endPoint[1] - directionFacing[1] * snakeWidth);
+      context.stroke();
+      
+      continue;
+    } else if (i == snake.length - 1) {
+      context.beginPath();
+      let startPosition = getLinePoint(snakePositions[i], getDirection(snakePositions[i - 1], snakePositions[i]), false);
+      let endPosition = getLinePoint(snakePositions[i], getDirection(snakePositions[i - 1], snakePositions[i]), true);
+      context.moveTo(startPosition[0], startPosition[1]);
+      context.lineTo(endPosition[0] - getDirection(snakePositions[i - 1], snakePositions[i])[0] * snakeWidth, endPosition[1] - getDirection(snakePositions[i - 1], snakePositions[i])[1] * snakeWidth);
+      context.stroke();
+      
+      continue;
+    } else if (!isInLine(snakePositions[i], snakePositions[i + 1], getDirection(snakePositions[i - 1], snakePositions[i]))) { // we are on a curve
+      context.beginPath();
+      let startDirection = getDirection(snakePositions[i - 1], snakePositions[i]);
+      let endDirection = getDirection(snakePositions[i], snakePositions[i + 1]);
+
+      let startPosition = getArcPoint(snakePositions[i], startDirection, endDirection, false);
+      let endPosition = getArcPoint(snakePositions[i], startDirection, endDirection, true);
+      let cornerPos = getCornerPos(startPosition, startDirection);
+
+      context.moveTo(startPosition[0], startPosition[1]);
+      context.arcTo(cornerPos[0], cornerPos[1], endPosition[0], endPosition[1], 15);
+      context.stroke();
+    } else {
+      context.beginPath();
+      let startPosition = getLinePoint(snakePositions[i], getDirection(snakePositions[i - 1], snakePositions[i]), false);
+      let endPosition = getLinePoint(snakePositions[i], getDirection(snakePositions[i - 1], snakePositions[i]), true);
+      context.moveTo(startPosition[0], startPosition[1]);
+      context.lineTo(endPosition[0], endPosition[1]);
+      context.stroke();
+    }
+  }
+}
+
+function getCornerPos(position, direction) {
+  return [position[0] + (direction[0] * 15), position[1] + (direction[1] * 15)];
+}
+
+function getLinePoint(position, direction, endPosition) {
+  if (endPosition) {
+    return [position[0] * 30 + 15 + (direction[0] * 15), position[1] * 30 + 15 + (direction[1] * 15)];
+  }
+  return [position[0] * 30 + 15 + (direction[0] * -15), position[1] * 30 + 15 + (direction[1] * -15)];
+}
+
+function getArcPoint(position, direction1, direction2, endPosition) {
+  if (endPosition) {
+    return [position[0] * 30 + 15 + (direction2[0] * 15), position[1] * 30 + 15 + (direction2[1] * 15)];
+  }
+  return [position[0] * 30 + 15 + (direction1[0] * -15), position[1] * 30 + 15 + (direction1[1] * -15)];
+}
+
+function getDirection(pos1, pos2) {
+  if (pos1[0] > pos2[0]) {
+    return [-1, 0];
+  } else if (pos1[0] < pos2[0]) {
+    return [1, 0];
+  } else if (pos1[1] > pos2[1]) {
+    return [0, -1];
+  } else if (pos1[1] < pos2[1]) {
+    return [0, 1];
+  }
+}
+
+function isInLine(pos1, pos2, direction) {
+  if (direction[0] == 0 && pos1[0] == pos2[0]) {
+    return true;
+  } else if (direction[1] == 0 && pos1[1] == pos2[1]) {
+    return true;
+  }
+  
+  return false;
 }
 
 function snakeOptions() {
   $("#optionsContent").html(`
-    <label for="choppyOption" onclick="updateCheckOption(this, 'smoothSnake')">Smooth Snake</label><input id="choppyOption" onclick="updateCheckOption(this, 'smoothSnake')" type="checkbox"><br>
+    <br style="line-height: 15px"><label style="margin-top: 30px;" for="snakeMode">Snake Mode</label>
+    <select id="snakeMode" onchange="updateSelectOption(this, 'snakeMode')">
+      <option value="normal">Normal</option>
+      <option value="smooth">Smooth</option>
+      <option value="blocky">Blocky</option>
+    </select><br>
     <label for="deathOption" onclick="updateCheckOption(this, 'enableDeath')">Enable Death</label><input id="deathOption" onclick="updateCheckOption(this, 'enableDeath')" type="checkbox"><br>
     <label for="speedOption">Speed</label><input value="350" max="500" min="0" onchange="updateSliderOption(this, 'speed')" id="speedOption" type="range"><br>
-  `);
-  document.getElementById("choppyOption").checked =
-    getCookie("smoothSnake") == "off" ? false : true;
+    <label for="snakeWidthOption">Snake Width</label><input value="15" max="30" min="1" onchange="updateSliderOption(this, 'snakeWidth')" id="snakeWidthOption" type="range"><br>
+    <label for="snakeColorOption">Snake Color</label><input value="#99FF99" onchange="updateSliderOption(this, 'snakeColor')" id="snakeColorOption" type="color"><br>
+`);
   document.getElementById("deathOption").checked =
     getCookie("enableDeath") == "off" ? false : true;
   document.getElementById("speedOption").value =
     getCookie("speed") === undefined ? "350" : getCookie("speed");
+  document.getElementById("snakeMode").value = 
+    getCookie("snakeMode") === undefined ? "normal" : getCookie("snakeMode");
+  document.getElementById("snakeWidthOption").value = 
+    getCookie("snakeWidth") === undefined ? 15 : getCookie("snakeWidth");
+  document.getElementById("snakeColorOption").value = 
+    getCookie("snakeColor") === undefined ? "#99FF99" : getCookie("snakeColor");
   document.getElementById("snakeOptions").style.backgroundColor = "gray";
   document.getElementById("fruitOptions").style.backgroundColor = "";
   document.getElementById("mapOptions").style.backgroundColor = "";
@@ -680,7 +820,7 @@ function mapOptions() {
     <select id="gameMode" onchange="updateSelectOption(this, 'gameMode')">
       <option value="normal">Normal</option>
       <option value="infinite">Infinite</option>
-    </select>
+    </select><br>
   `);
   loadCookies();
   document.getElementById("gameMode").value =
@@ -760,12 +900,41 @@ function loadCookies() {
     mapHeight =
       getCookie("mapHeight") === undefined ? 13 : getCookie("mapHeight");
   }
+  
+  delay = 500 - (getCookie("speed") === undefined ? 350 : getCookie("speed"));
+  
+  snakeWidth = (getCookie("snakeWidth") === undefined ? 15 : getCookie("snakeWidth"));
+  
+  snakeColor = getCookie("snakeColor") === undefined ? "#99FF99" : getCookie("snakeColor");
+  
+  if (getCookie("snakeMode") === undefined || getCookie("snakeMode") == "normal") {
+    snakeMode = "normal";
+    document.getElementById("backgroundBox").style.display = "none";
+    canvas.style.display = "";
+  } else {
+    snakeMode = getCookie("snakeMode");
+    canvas.style.display = "none";
+    document.getElementById("backgroundBox").style.display = "";
+  }
+  
+  if (snakeMode == "normal" || snakeMode == "blocky") {
+    animationTime = 0;
+  } else {
+    animationTime = delay;
+  }
 
   document.getElementById("backgroundBox").style.width =
     (mapWidth * 30).toString() + "px";
   document.getElementById("backgroundBox").style.height =
     (mapHeight * 30).toString() + "px";
   document.getElementById("backgroundBox").style.marginLeft =
+    "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
+  
+  document.getElementById("foodBox").style.width =
+    (mapWidth * 30).toString() + "px";
+  document.getElementById("foodBox").style.height =
+    (mapHeight * 30).toString() + "px";
+  document.getElementById("foodBox").style.marginLeft =
     "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
 
   document.getElementById("countdownBox").style.width =
@@ -775,25 +944,27 @@ function loadCookies() {
   document.getElementById("countdownBox").style.marginLeft =
     "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
 
-  /*canvas.height = (mapHeight * 30).toString() + "px";
-  canvas.width = (mapWidth * 30).toString() + "px";
-  canvas.style.marginLeft = "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
-  canvas.style.marginLeft = "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";*/
+  canvas.height = (mapHeight * 30).toString();
+  canvas.width = (mapWidth * 30).toString();
+  canvas.style.marginLeft =
+    "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
+  canvas.style.marginLeft =
+    "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
 
   document.getElementById("countdownNumbers").style.marginTop =
     "calc(" + ((mapHeight * 30) / 2).toString() + "px - (155px / 2))";
 
   gameMode =
     getCookie("gameMode") === undefined ? "normal" : getCookie("gameMode");
-  delay = 500 - (getCookie("speed") === undefined ? 350 : getCookie("speed"));
-  animationTime = getCookie("smoothSnake") == "off" ? 0 : delay;
   deathAllowed = getCookie("enableDeath") == "off" ? false : true;
   numFood = getCookie("fruitCount") === undefined ? 1 : getCookie("fruitCount");
+  
+  reset();
 }
 
 $(function() {
-  //canvas = document.getElementById("canvas");
-  //context = canvas.getContext('2d');
+  canvas = document.getElementById("canvas");
+  context = canvas.getContext("2d");
   loadCookies();
   checkSchoolHours();
   snakeOptions();

@@ -1,4 +1,45 @@
 body {
+  /* Disables pull-to-refresh but allows overscroll glow effects. */
+
+  overscroll-behavior-y: contain;
+}
+
+label {
+  font-family: arial;
+  font-size: 30px;
+  margin: 15px;
+}
+
+input[type="checkbox"] {
+  width: 30px;
+  height: 30px;
+  margin: 15px;
+  vertical-align: sub;
+}
+
+input[type="number"] {
+  width: 30px;
+  height: 30px;
+  margin: 15px;
+  vertical-align: super;
+}
+
+input[type="color"] {
+  width: 50px;
+  height: 30px;
+  margin: 15px;
+  border: none;
+  padding: 0;
+}
+
+select {
+  width: 125px;
+  height: 30px;
+  vertical-align: top;
+  margin-left: -10px;
+}
+
+body {
   background-color: white;
 }
 
@@ -9,6 +50,16 @@ h1 {
 
 p {
   text-align: center;
+}
+
+#topLeftLink {
+  float: left;
+  display: inline-block;
+}
+
+#topRightLink {
+  float: right;
+  display: inline-block;
 }
 
 .snakeBlock {
@@ -37,24 +88,33 @@ p {
 }*/
 
 .backgroundBox {
-  width: 390px;
-  height: 390px;
-  background-color: white;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
   border: 5px solid black;
   position: absolute;
-  margin-left: calc(50% - (390px / 2));
+  margin-left: calc(50% - (100% / 2));
+  margin-top: 50px;
+  border-radius: 10px;
+}
+
+.canvasBackgroundBox {
+  background-color: transparent;
+  border: 5px solid black;
+  position: absolute;
+  margin-left: calc(50% - (100% / 2));
   margin-top: 50px;
   border-radius: 10px;
 }
 
 .optionsBox {
-  width: 375px;
-  height: 500px;
+  width: 30vw;
+  height: 85vh;
   background-color: white;
   box-shadow: 0 0 10px black;
   position: absolute;
-  margin-left: calc(50% - (375px / 2));
-  top: calc(50% - (500px / 2));
+  margin-left: calc(50% - (30vw / 2));
+  top: calc(50% - (85vh / 2));
   border-radius: 10px;
 }
 
@@ -74,6 +134,8 @@ p {
   background-color: white;
   display: inline-block;
   border-radius: 5px 5px 0 0;
+  font-size: 1.5vw;
+  padding: 5px 10px 0 10px;
 }
 
 .optionsTab:hover {
@@ -87,11 +149,12 @@ p {
 .optionsContent {
   background-color: whitesmoke;
   width: calc(100% - 40px);
-  height: 300px;
+  height: 60%;
   margin-left: 20px;
   margin-right: 20px;
   border: 1px solid gray;
   border-radius: 5px;
+  overflow-y: scroll;
 }
 
 .start {
@@ -112,4 +175,24 @@ p {
 
 .start:active {
   background-color: #195991;
+}
+
+.countdownNumbers {
+  color: #FFFFFFD0;
+  font-size: 155px;
+  font-family: arial;
+  margin-top: calc(50% - (155px / 2));
+}
+
+@media only screen and (max-width: 950px) {
+  .optionsBox {
+    width: 100vw;
+    height: 85vh;
+    margin-left: calc(50% - (100vw / 2));
+    top: calc(50% - (85vh / 2));
+  }
+  
+  .optionsTab {
+    font-size: 5vw;
+  }
 }

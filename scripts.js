@@ -158,6 +158,10 @@ function down() {
 
 document.onkeydown = function(e) {
   if (dead) {
+    if (e.code == "Space" || e.code == "Enter") {
+      start();
+    }
+    
     return;
   }
   switch (e.code) {

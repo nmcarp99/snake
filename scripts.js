@@ -31,6 +31,7 @@ var context;
 var snakeMode;
 var snakeWidth = 15;
 var snakeColor = "#99FF99";
+var snakeBorderColor = "#90EE90";
 
 document.addEventListener("touchstart", handleTouchStart, false);
 
@@ -281,10 +282,8 @@ function reset() {
     let newSnakeBlock = document.createElement("div");
     newSnakeBlock.setAttribute("class", "snakeBlock");
     newSnakeBlock.id = i.toString();
-    if (i == 0) {
-      newSnakeBlock.style.backgroundColor = snakeColor;
-    }
     newSnakeBlock.style.backgroundColor = snakeColor;
+    newSnakeBlock.style.borderColor = snakeBorderColor;
     newSnakeBlock.style.left = ((snakePosition[0] - i) * 30).toString() + "px";
     newSnakeBlock.style.top = (snakePosition[1] * 30).toString() + "px";
     document.getElementById("backgroundBox").appendChild(newSnakeBlock);
@@ -511,6 +510,7 @@ function infinite() {
         let newSnakeBlock = document.createElement("div");
         newSnakeBlock.setAttribute("class", "snakeBlock");
         newSnakeBlock.style.backgroundColor = snakeColor;
+        newSnakeBlock.style.borderColor = snakeBorderColor;
         newSnakeBlock.style.left = snake[i].style.left;
         newSnakeBlock.style.top = snake[i].style.top;
         newSnakeBlock.id = snake.length;
@@ -655,6 +655,7 @@ function normal() {
         let newSnakeBlock = document.createElement("div");
         newSnakeBlock.setAttribute("class", "snakeBlock");
         newSnakeBlock.style.backgroundColor = snakeColor;
+        newSnakeBlock.style.borderColor = snakeBorderColor;
         newSnakeBlock.style.left = snake[i].style.left;
         newSnakeBlock.style.top = snake[i].style.top;
         newSnakeBlock.id = snake.length;
@@ -787,6 +788,7 @@ function snakeOptions() {
     <label for="speedOption">Speed</label><input value="350" max="500" min="0" onchange="updateSliderOption(this, 'speed')" id="speedOption" type="range"><br>
     <label for="snakeWidthOption">Snake Width</label><input value="15" max="30" min="1" onchange="updateSliderOption(this, 'snakeWidth')" id="snakeWidthOption" type="range"><br>
     <label for="snakeColorOption">Snake Color</label><input value="#99FF99" onchange="updateSliderOption(this, 'snakeColor')" id="snakeColorOption" type="color"><br>
+    <label for="snakeBorderColorOption">Border Color</label><input value="#90EE90" onchange="updateSliderOption(this, 'snakeBorderColor')" id="snakeBorderColorOption" type="color"><br>
 `);
   document.getElementById("deathOption").checked =
     getCookie("enableDeath") == "off" ? false : true;
@@ -798,6 +800,8 @@ function snakeOptions() {
     getCookie("snakeWidth") === undefined ? 15 : getCookie("snakeWidth");
   document.getElementById("snakeColorOption").value = 
     getCookie("snakeColor") === undefined ? "#99FF99" : getCookie("snakeColor");
+  document.getElementById("snakeBorderColorOption").value = 
+    getCookie("snakeBorderColor") === undefined ? "#90EE90" : getCookie("snakeBorderColor");
   document.getElementById("snakeOptions").style.backgroundColor = "gray";
   document.getElementById("fruitOptions").style.backgroundColor = "";
   document.getElementById("mapOptions").style.backgroundColor = "";
@@ -910,6 +914,7 @@ function loadCookies() {
   snakeWidth = (getCookie("snakeWidth") === undefined ? 15 : getCookie("snakeWidth"));
   
   snakeColor = getCookie("snakeColor") === undefined ? "#99FF99" : getCookie("snakeColor");
+  snakeBorderColor = getCookie("snakeBorderColor") === undefined ? "#90EE90" : getCookie("snakeBorderColor");
   
   if (getCookie("snakeMode") === undefined || getCookie("snakeMode") == "normal") {
     snakeMode = "normal";

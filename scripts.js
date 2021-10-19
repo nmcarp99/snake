@@ -690,7 +690,7 @@ function normal() {
 
 function draw() {
   context.clearRect(0, 0, canvas.width, canvas.height);
-  drawCanvas(snakeWidth + 5, snakeBorderColor);
+  drawCanvas(parseInt(snakeWidth, 10) + 5, snakeBorderColor);
   drawCanvas(snakeWidth, snakeColor);
 }
 

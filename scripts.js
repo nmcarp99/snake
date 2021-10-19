@@ -297,7 +297,7 @@ function reset() {
     snakePositions.push([snakePosition[0] - i, snakePosition[1]]);
   }
   
-  drawCanvas();
+  draw();
 }
 
 function getRandomInt(min, max) {
@@ -557,7 +557,7 @@ function infinite() {
   }
   //printMap();
   
-  drawCanvas();
+  draw();
 }
 
 function normal() {
@@ -685,13 +685,18 @@ function normal() {
   }
   //printMap();
   
-  drawCanvas();
+  draw();
 }
 
-function drawCanvas() {
+function draw() {
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.strokeStyle = snakeColor;
-  context.lineWidth = snakeWidth;
+  drawCanvas(snakeWidth + 5, snakeBorderColor);
+  drawCanvas(snakeWidth, snakeColor);
+}
+
+function drawCanvas(width, color) {
+  context.strokeStyle = color;
+  context.lineWidth = width;
   context.lineCap = "round";
   
 

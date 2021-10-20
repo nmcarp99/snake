@@ -23,6 +23,7 @@ var interval;
 var delay;
 var animationTime;
 var dead = true;
+var moving = false;
 var deathAllowed;
 var numFood;
 var gameMode;
@@ -34,6 +35,8 @@ var snakeColor = "#99FF99";
 var snakeBorderColor = "#90EE90";
 var foodColor = "#87CEFA";
 var foodBorderColor = "#91B8C5";
+var snakeAnimationInterval;
+var currentFrame = 0;
 
 document.addEventListener("touchstart", handleTouchStart, false);
 
@@ -102,6 +105,7 @@ function die(delay = 1000, forceEnd = false) {
     return;
   }
   dead = true;
+  moving = false;
   clearInterval(interval);
   setTimeout(function() {
     document.getElementById("dimBox").style.display = "";
@@ -331,6 +335,14 @@ function spawnFood() {
   newFoodBlock.setAttribute("class", "foodBlock");
   newFoodBlock.style.backgroundColor = foodColor;
   newFoodBlock.style.borderColor = foodBorderColor;
+  
+  if (snakeMode == "normal") {
+    newFoodBlock.style.width = snakeWidth  + "px";
+    newFoodBlock.style.height = snakeWidth + "px";
+    newFoodBlock.style.marginLeft = (30 - snakeWidth) / 2 - 2 + "px";
+    newFoodBlock.style.marginTop = (30 - snakeWidth) / 2 - 2 + "px";
+  }
+  
   newFoodBlock.style.left = foodPosition[0] * 30 + "px";
   newFoodBlock.style.top = foodPosition[1] * 30 + "px";
   document.getElementById("foodBox").appendChild(newFoodBlock);
@@ -338,6 +350,7 @@ function spawnFood() {
 }
 
 function removeFood(position) {
+  setTimeout(() => {
   for (var i = 0; i < foods.length; i++) {
     if (
       parseInt(foods[i].style.left, 10) / 30 == position[0] &&
@@ -346,6 +359,7 @@ function removeFood(position) {
       foods[i].remove();
     }
   }
+  }, delay);
 }
 
 function coordinateToIndex(x, y) {
@@ -392,6 +406,14 @@ function start() {
 }
 
 function move() {
+  clearInterval(snakeAnimationInterval);
+  currentFrame = 0;
+  snakeAnimationInterval = setInterval(() => {
+    if (!moving) return;
+    currentFrame++;
+    draw();
+  }, delay / 30);
+  
   switch (gameMode) {
     case "normal":
       normal();
@@ -441,6 +463,7 @@ function infinite() {
       die(1000, true);
     }
     die();
+    moving = false;
     return;
   } else if (spaceAhead == "f") {
     touchingFood();
@@ -557,6 +580,8 @@ function infinite() {
   }
   //printMap();
   
+  moving = true;
+  
   draw();
 }
 
@@ -618,6 +643,7 @@ function normal() {
       die(1000, true);
     }
     die();
+    moving = false;
     return;
   } else if (spaceAhead == "f") {
     touchingFood();
@@ -673,6 +699,8 @@ function normal() {
         blocksToAdd--;
         endSnakePosition = snakePositions[i];
       }
+      
+      moving = true;
     }
 
     //snake[i].style.left = snake[i - 1].style.left;
@@ -713,7 +741,9 @@ function drawCanvas(width, color) {
       }
             
       context.moveTo(startPoint[0], startPoint[1]);
-      context.lineTo(endPoint[0] - directionFacing[0] * snakeWidth, endPoint[1] - directionFacing[1] * snakeWidth);
+      context.lineTo(endPoint[0] - lastMovedDirection[0] * (30 - currentFrame), endPoint[1] - lastMovedDirection[1] * (30 - currentFrame));
+      //context.moveTo(startPoint[0], startPoint[1]);
+      //context.arc(endPoint[0] - lastMovedDirection[0] * (30 - currentFrame), endPoint[1], 5, 0, Math.PI*2);
       context.stroke();
       
       continue;
@@ -721,8 +751,9 @@ function drawCanvas(width, color) {
       context.beginPath();
       let startPosition = getLinePoint(snakePositions[i], getDirection(snakePositions[i - 1], snakePositions[i]), false);
       let endPosition = getLinePoint(snakePositions[i], getDirection(snakePositions[i - 1], snakePositions[i]), true);
+      let lastDirection = getDirection(snakePositions[i - 1], snakePositions[i]);
       context.moveTo(startPosition[0], startPosition[1]);
-      context.lineTo(endPosition[0] - getDirection(snakePositions[i - 1], snakePositions[i])[0] * snakeWidth, endPosition[1] - getDirection(snakePositions[i - 1], snakePositions[i])[1] * snakeWidth);
+      context.lineTo(endPosition[0] - lastDirection[0] * (currentFrame), endPosition[1] - lastDirection[1] * (currentFrame));
       context.stroke();
       
       continue;

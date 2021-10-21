@@ -28,7 +28,9 @@ var deathAllowed;
 var numFood;
 var gameMode;
 var canvas;
+var backgroundCanvas;
 var context;
+var backgroundContext;
 var snakeMode;
 var snakeWidth = 15;
 var snakeColor = "#99FF99";
@@ -725,8 +727,7 @@ function draw() {
 function drawCanvas(width, color) {
   context.strokeStyle = color;
   context.lineWidth = width;
-  context.lineCap = "round";
-  
+  context.lineCap = "round";  
 
   for (var i = 0; i < snake.length; i++) {
     if (i == 0) {

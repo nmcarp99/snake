@@ -28,7 +28,10 @@ var deathAllowed;
 var numFood;
 var gameMode;
 var canvas;
+var backgroundCheckersCanvas;
+var backgroundCheckersContext;
 var context;
+var backgroundContext;
 var snakeMode;
 var snakeWidth = 15;
 var snakeColor = "#99FF99";
@@ -725,8 +728,7 @@ function draw() {
 function drawCanvas(width, color) {
   context.strokeStyle = color;
   context.lineWidth = width;
-  context.lineCap = "round";
-  
+  context.lineCap = "round";  
 
   for (var i = 0; i < snake.length; i++) {
     if (i == 0) {
@@ -880,10 +882,13 @@ function mapOptions() {
       <option value="infinite">Infinite</option>
     </select><br>
     <label for="backgroundColorOption">Background Color</label><input value="#FFFFFF" onchange="updateSliderOption(this, 'backgroundColor')" id="backgroundColorOption" type="color"><br>
+    <label for="alternateBackgroundColorOption">Alternate Color</label><input value="#EEEEEE" onchange="updateSliderOption(this, 'alternateBackgroundColor')" id="alternateBackgroundColorOption" type="color"><br>
   `);
   loadCookies();
   document.getElementById("backgroundColorOption").value = 
     getCookie("backgroundColor") === undefined ? "#FFFFFF" : getCookie("backgroundColor");
+  document.getElementById("alternateBackgroundColorOption").value = 
+    getCookie("alternateBackgroundColor") === undefined ? "#EEEEEE" : getCookie("alternateBackgroundColor");
   document.getElementById("gameMode").value =
     getCookie("gameMode") === undefined ? "normal" : getCookie("gameMode");
   document.getElementById("enableWidth").checked =
@@ -948,6 +953,23 @@ function updateCheckOption(object, optionName) {
   loadCookies();
 }
 
+function drawBackground() {  
+  for (var i = 0; i < mapHeight; i++) {
+    for (var j = 0; j < mapWidth; j++) {
+      backgroundCheckersContext.beginPath();
+      if ((j + (i % 2)) % 2 == 0) {
+        backgroundCheckersContext.fillStyle = getCookie("backgroundColor") === undefined ? "#FFFFFF" : getCookie("backgroundColor");
+      } else {
+        backgroundCheckersContext.fillStyle = getCookie("alternateBackgroundColor") === undefined ? "#EEEEEE" : getCookie("alternateBackgroundColor");
+      }
+      
+      backgroundCheckersContext.rect(j * 30, i * 30, 30, 30);
+      
+      backgroundCheckersContext.fill();
+    }
+  }
+}
+
 function loadCookies() {
   if (getCookie("enableWidth") != "on") {
     mapWidth = Math.floor((window.innerWidth - 50) / 30);
@@ -972,7 +994,8 @@ function loadCookies() {
   foodColor = getCookie("foodColor") === undefined ? "#87CEFA" : getCookie("foodColor");
   foodBorderColor = getCookie("foodBorderColor") === undefined ? "#91B8C5" : getCookie("foodBorderColor");
   
-  document.getElementById("foodBox").style.backgroundColor = getCookie("backgroundColor") === undefined ? "#FFFFFF" : getCookie("backgroundColor");
+  //document.getElementById("foodBox").style.backgroundColor = "#ff0000";
+    //getCookie("backgroundColor") === undefined ? "#FFFFFF" : getCookie("backgroundColor");
   
   if (getCookie("snakeMode") === undefined || getCookie("snakeMode") == "normal") {
     snakeMode = "normal";
@@ -1017,6 +1040,13 @@ function loadCookies() {
     "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
   canvas.style.marginLeft =
     "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
+  
+  backgroundCheckersCanvas.height = (mapHeight * 30).toString();
+  backgroundCheckersCanvas.width = (mapWidth * 30).toString();
+  backgroundCheckersCanvas.style.marginLeft =
+    "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
+  backgroundCheckersCanvas.style.marginLeft =
+    "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
 
   document.getElementById("countdownNumbers").style.marginTop =
     "calc(" + ((mapHeight * 30) / 2).toString() + "px - (155px / 2))";
@@ -1026,12 +1056,16 @@ function loadCookies() {
   deathAllowed = getCookie("enableDeath") == "off" ? false : true;
   numFood = getCookie("fruitCount") === undefined ? 1 : getCookie("fruitCount");
   
+  drawBackground();
+  
   reset();
 }
 
 $(function() {
   canvas = document.getElementById("canvas");
   context = canvas.getContext("2d");
+  backgroundCheckersCanvas = document.getElementById("backgroundCheckers");
+  backgroundCheckersContext = backgroundCheckersCanvas.getContext("2d");
   loadCookies();
   checkSchoolHours();
   snakeOptions();

@@ -915,6 +915,7 @@ function otherOptions() {
       <option value="undefined">Ask At School</option>
     </select>
     <button type="button" class="start" onclick="checkSchoolHours(true)">Disguise Now</button>
+    <button type="button" class="start" onclick="window.open('index.html', 'Classes', 'width=1000,height=500');">Open In Window</button>
   `);
   document.getElementById("disguiseTab").value = getCookie("disguiseTab");
   document.getElementById("snakeOptions").style.backgroundColor = "";

@@ -182,13 +182,25 @@ function handleKeyPresses(e) {
     case "ArrowDown":
       if (down()) return;
       break;
+    case "KeyS":
+      if (down()) return;
+      break;
     case "ArrowRight":
+      if (right()) return;
+      break;
+    case "KeyD":
       if (right()) return;
       break;
     case "ArrowUp":
       if (up()) return;
       break;
+    case "KeyW":
+      if (up()) return;
+      break;
     case "ArrowLeft":
+      if (left()) return;
+      break;
+    case "KeyA":
       if (left()) return;
       break;
     case "Escape":

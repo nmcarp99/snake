@@ -941,7 +941,7 @@ function otherOptions() {
     </select>
     <button type="button" class="start" onclick="checkSchoolHours(true)">Disguise Now</button>
     <button type="button" class="start" onclick="openInWindow()">Control Window</button>
-    <br><br><a class="controlWindow" href="controlWindow.html">How to use the control window?</a>
+    <br><br><a target="_blank" class="controlWindow" href="controlWindow.html">How to use the control window?</a>
   `);
   document.getElementById("disguiseTab").value = getCookie("disguiseTab");
   document.getElementById("snakeOptions").style.backgroundColor = "";

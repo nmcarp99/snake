@@ -221,7 +221,15 @@ window.addEventListener('message', event => {
 });
 
 function openInWindow() {
-  newWindow = window.open('https://www.google.com', 'Classes');
+  let url = prompt("What url would you like the control window to open to?\n(Leave blank for Google Classroom)");
+  
+  if (url == "") {
+    url = "https://classroom.google.com/h";
+  } else if (!url.startsWith("http")) {
+    url = "http://" + url;
+  }
+
+  newWindow = window.open(url, "Classes");
 }
 
 function printSnakeBlockCount() {

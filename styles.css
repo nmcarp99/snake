@@ -207,3 +207,7 @@ p {
   border-radius: 25px;
   cursor: pointer;
 }
+
+.controlWindow {
+  margin-left: calc(50% - 100px)
+}

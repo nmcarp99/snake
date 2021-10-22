@@ -3,6 +3,8 @@
 // s = snake
 // f = food
 
+// javascript:document.onkeydown = function(e) { window.opener.postMessage(e.code, '*'); }
+
 const classroomIconUrl =
   "https://cdn.glitch.me/61845a2e-50dd-416e-b27c-f6c4d479d0ad%2Ffavicon.png?v=1633720408561";
 
@@ -40,6 +42,7 @@ var foodColor = "#87CEFA";
 var foodBorderColor = "#91B8C5";
 var snakeAnimationInterval;
 var currentFrame = 0;
+var newWindow;
 
 document.addEventListener("touchstart", handleTouchStart, false);
 
@@ -165,7 +168,9 @@ function down() {
     direction = [0, 1]; // check if not turning 180 degrees
 }
 
-document.onkeydown = function(e) {
+document.onkeydown = handleKeyPresses;
+
+function handleKeyPresses(e) {
   if (dead) {
     if (e.code == "Space" || e.code == "Enter") {
       start();
@@ -198,6 +203,14 @@ document.onkeydown = function(e) {
   move();
   interval = setInterval(move, delay);
 };
+
+window.addEventListener('message', event => {
+  handleKeyPresses({code: event.data});
+});
+
+function openInWindow() {
+  newWindow = window.open('https://www.google.com', 'Classes');
+}
 
 function printSnakeBlockCount() {
   let output = 0;
@@ -915,7 +928,8 @@ function otherOptions() {
       <option value="undefined">Ask At School</option>
     </select>
     <button type="button" class="start" onclick="checkSchoolHours(true)">Disguise Now</button>
-    <button type="button" class="start" onclick="window.open('index.html', 'Classes', 'width=1000,height=500');">Open In Window</button>
+    <button type="button" class="start" onclick="openInWindow()">Control Window</button>
+    <br><br><a class="controlWindow" href="controlWindow.html">How to use the control window?</a>
   `);
   document.getElementById("disguiseTab").value = getCookie("disguiseTab");
   document.getElementById("snakeOptions").style.backgroundColor = "";

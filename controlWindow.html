@@ -27,10 +27,14 @@
       <li>Right click on the bookmark's bar.</li>
       <li>Click on "Add page".</li>
       <li>Set the name to what you would like to be displayed on your bookmark's bar.</li>
-      <li>Copy and paste the following into the "address" field.</li>
+      <li>Copy and paste from the first box into the "address" field. If you don't want the control window to scroll when you press the arrow keys, use the second box instead.</li>
     </ol>
     <div class="codeBox h3">
       javascript:document.onkeydown = function(e) { window.opener.postMessage(e.code, '*'); }
+    </div>
+    <br>
+    <div class="codeBox h3">
+      javascript:document.onkeydown = function(e) { e.preventDefault(); window.opener.postMessage(e.code, '*'); }
     </div>
     <h2>
       Usage

@@ -907,8 +907,8 @@ function fruitOptions() {
 
 function mapOptions() {
   $("#optionsContent").html(`
-    <label for="mapWidth">Map Width</label><input min="10" max="10000" id="mapWidth" onchange="updateSelectOption(this, 'mapWidth', mapOptions)" type="number"><input id="enableWidth" onclick="updateCheckOption(this, 'enableWidth')" type="checkbox"><br>
-    <label for="mapHeight">Map Height</label><input min="10" max="10000" id="mapHeight" onchange="updateSelectOption(this, 'mapHeight', mapOptions)" type="number"><input id="enableHeight" onclick="updateCheckOption(this, 'enableHeight')" type="checkbox"><br>
+    <label for="mapWidth">Map Width</label><input min="5" max="10000" id="mapWidth" onchange="updateSelectOption(this, 'mapWidth', mapOptions)" type="number"><input id="enableWidth" onclick="updateCheckOption(this, 'enableWidth')" type="checkbox"><br>
+    <label for="mapHeight">Map Height</label><input min="5" max="10000" id="mapHeight" onchange="updateSelectOption(this, 'mapHeight', mapOptions)" type="number"><input id="enableHeight" onclick="updateCheckOption(this, 'enableHeight')" type="checkbox"><br>
     <br style="line-height: 15px"><label style="margin-top: 30px;" for="gameMode">Game Mode</label>
     <select id="gameMode" onchange="updateSelectOption(this, 'gameMode')">
       <option value="normal">Normal</option>

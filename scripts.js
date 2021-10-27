@@ -4,6 +4,7 @@
 // f = food
 
 // javascript:document.onkeydown = function(e) { window.opener.postMessage(e.code, '*'); }
+// javascript:var promptResult = prompt("What website would you like to frame?"); if (!promptResult.startsWith("http")) {promptResult = "https://" + promptResult;}document.body.innerHTML = "<iframe src='" + promptResult + "' width='100%' style='height:100%;border:none;position:fixed;left:0;top:0;' />"
 
 const classroomIconUrl =
   "https://cdn.glitch.me/61845a2e-50dd-416e-b27c-f6c4d479d0ad%2Ffavicon.png?v=1633720408561";
@@ -358,8 +359,6 @@ function spawnFood() {
   }
 
   if (emptySpaces.length == 0) {
-    alert("You have filled the map!");
-    die(0, true);
     return;
   }
 

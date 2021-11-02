@@ -176,7 +176,7 @@ function handleKeyPresses(e) {
     if (e.code == "Space" || e.code == "Enter") {
       start();
     }
-    
+
     return;
   }
   switch (e.code) {
@@ -215,15 +215,17 @@ function handleKeyPresses(e) {
   clearInterval(interval);
   move();
   interval = setInterval(move, delay);
-};
+}
 
-window.addEventListener('message', event => {
-  handleKeyPresses({code: event.data});
+window.addEventListener("message", event => {
+  handleKeyPresses({ code: event.data });
 });
 
 function openInWindow() {
-  let url = prompt("What url would you like the control window to open to?\n(Leave blank for Google Classroom)");
-  
+  let url = prompt(
+    "What url would you like the control window to open to?\n(Leave blank for Google Classroom)"
+  );
+
   if (url == "") {
     url = "https://classroom.google.com/h";
   } else if (!url.startsWith("http")) {
@@ -333,11 +335,13 @@ function reset() {
     newSnakeBlock.style.borderColor = snakeBorderColor;
     newSnakeBlock.style.left = ((snakePosition[0] - i) * 30).toString() + "px";
     newSnakeBlock.style.top = (snakePosition[1] * 30).toString() + "px";
+    newSnakeBlock.style.width = snakeWidth - 4 + 'px';
+    newSnakeBlock.style.height = snakeWidth - 4 + 'px';
     document.getElementById("backgroundBox").appendChild(newSnakeBlock);
     snake.push(newSnakeBlock);
     snakePositions.push([snakePosition[0] - i, snakePosition[1]]);
   }
-  
+
   draw();
 }
 
@@ -370,14 +374,14 @@ function spawnFood() {
   newFoodBlock.setAttribute("class", "foodBlock");
   newFoodBlock.style.backgroundColor = foodColor;
   newFoodBlock.style.borderColor = foodBorderColor;
-  
-  if (snakeMode == "normal") {
-    newFoodBlock.style.width = snakeWidth  + "px";
+
+  if (true) {
+    newFoodBlock.style.width = snakeWidth + "px";
     newFoodBlock.style.height = snakeWidth + "px";
     newFoodBlock.style.marginLeft = (30 - snakeWidth) / 2 - 2 + "px";
     newFoodBlock.style.marginTop = (30 - snakeWidth) / 2 - 2 + "px";
   }
-  
+
   newFoodBlock.style.left = foodPosition[0] * 30 + "px";
   newFoodBlock.style.top = foodPosition[1] * 30 + "px";
   document.getElementById("foodBox").appendChild(newFoodBlock);
@@ -386,14 +390,14 @@ function spawnFood() {
 
 function removeFood(position) {
   setTimeout(() => {
-  for (var i = 0; i < foods.length; i++) {
-    if (
-      parseInt(foods[i].style.left, 10) / 30 == position[0] &&
-      parseInt(foods[i].style.top, 10) / 30 == position[1]
-    ) {
-      foods[i].remove();
+    for (var i = 0; i < foods.length; i++) {
+      if (
+        parseInt(foods[i].style.left, 10) / 30 == position[0] &&
+        parseInt(foods[i].style.top, 10) / 30 == position[1]
+      ) {
+        foods[i].remove();
+      }
     }
-  }
   }, delay);
 }
 
@@ -448,7 +452,7 @@ function move() {
     currentFrame++;
     draw();
   }, delay / 30);
-  
+
   switch (gameMode) {
     case "normal":
       normal();
@@ -579,6 +583,8 @@ function infinite() {
         newSnakeBlock.style.borderColor = snakeBorderColor;
         newSnakeBlock.style.left = snake[i].style.left;
         newSnakeBlock.style.top = snake[i].style.top;
+        newSnakeBlock.style.width = snakeWidth - 4 + 'px';
+        newSnakeBlock.style.height = snakeWidth - 4 + 'px';
         newSnakeBlock.id = snake.length;
         document.getElementById("backgroundBox").appendChild(newSnakeBlock);
         snake.push(newSnakeBlock);
@@ -614,9 +620,9 @@ function infinite() {
     snakePositions[i] = snakePositions[i - 1];
   }
   //printMap();
-  
+
   moving = true;
-  
+
   draw();
 }
 
@@ -692,8 +698,8 @@ function normal() {
         snakePositions[i][0] + direction[0],
         snakePositions[i][1] + direction[1]
       ];
-      let newLeftPosition = snakePositions[i][0] * 30;
-      let newTopPosition = snakePositions[i][1] * 30;
+      let newLeftPosition = snakePositions[i][0] * 30 + 15 - snakeWidth / 2;
+      let newTopPosition = snakePositions[i][1] * 30 + 15 - snakeWidth / 2;
       //snake[i].style.left = newLeftPosition + "px";
       $("#" + snake[i].id).animate(
         { left: newLeftPosition + "px", top: newTopPosition + "px" },
@@ -727,6 +733,8 @@ function normal() {
         newSnakeBlock.style.borderColor = snakeBorderColor;
         newSnakeBlock.style.left = snake[i].style.left;
         newSnakeBlock.style.top = snake[i].style.top;
+        newSnakeBlock.style.width = snakeWidth - 4 + 'px';
+        newSnakeBlock.style.height = snakeWidth - 4 + 'px';
         newSnakeBlock.id = snake.length;
         document.getElementById("backgroundBox").appendChild(newSnakeBlock);
         snake.push(newSnakeBlock);
@@ -734,7 +742,7 @@ function normal() {
         blocksToAdd--;
         endSnakePosition = snakePositions[i];
       }
-      
+
       moving = true;
     }
 
@@ -747,7 +755,7 @@ function normal() {
     snakePositions[i] = snakePositions[i - 1];
   }
   //printMap();
-  
+
   draw();
 }
 
@@ -760,53 +768,108 @@ function draw() {
 function drawCanvas(width, color) {
   context.strokeStyle = color;
   context.lineWidth = width;
-  context.lineCap = "round";  
+  context.lineCap = "round";
 
   for (var i = 0; i < snake.length; i++) {
     if (i == 0) {
       context.beginPath();
-      
-      let startPoint = getLinePoint(snakePositions[0], lastMovedDirection, false);
+
+      let startPoint = getLinePoint(
+        snakePositions[0],
+        lastMovedDirection,
+        false
+      );
       let endPoint = getLinePoint(snakePositions[0], lastMovedDirection, true);
       let directionFacing = lastMovedDirection;
-      
+
       if (lastMovedDirection[0] == 0 && lastMovedDirection[1] == 0) {
         directionFacing = [1, 0];
       }
-            
+
       context.moveTo(startPoint[0], startPoint[1]);
-      context.lineTo(endPoint[0] - lastMovedDirection[0] * (30 - currentFrame), endPoint[1] - lastMovedDirection[1] * (30 - currentFrame));
+      context.lineTo(
+        endPoint[0] - lastMovedDirection[0] * (30 - currentFrame),
+        endPoint[1] - lastMovedDirection[1] * (30 - currentFrame)
+      );
       //context.moveTo(startPoint[0], startPoint[1]);
       //context.arc(endPoint[0] - lastMovedDirection[0] * (30 - currentFrame), endPoint[1], 5, 0, Math.PI*2);
       context.stroke();
-      
+
       continue;
     } else if (i == snake.length - 1) {
       context.beginPath();
-      let startPosition = getLinePoint(snakePositions[i], getDirection(snakePositions[i - 1], snakePositions[i]), false);
-      let endPosition = getLinePoint(snakePositions[i], getDirection(snakePositions[i - 1], snakePositions[i]), true);
-      let lastDirection = getDirection(snakePositions[i - 1], snakePositions[i]);
+      let startPosition = getLinePoint(
+        snakePositions[i],
+        getDirection(snakePositions[i - 1], snakePositions[i]),
+        false
+      );
+      let endPosition = getLinePoint(
+        snakePositions[i],
+        getDirection(snakePositions[i - 1], snakePositions[i]),
+        true
+      );
+      let lastDirection = getDirection(
+        snakePositions[i - 1],
+        snakePositions[i]
+      );
       context.moveTo(startPosition[0], startPosition[1]);
-      context.lineTo(endPosition[0] - lastDirection[0] * (currentFrame), endPosition[1] - lastDirection[1] * (currentFrame));
+      context.lineTo(
+        endPosition[0] - lastDirection[0] * currentFrame,
+        endPosition[1] - lastDirection[1] * currentFrame
+      );
       context.stroke();
-      
+
       continue;
-    } else if (!isInLine(snakePositions[i], snakePositions[i + 1], getDirection(snakePositions[i - 1], snakePositions[i]))) { // we are on a curve
+    } else if (
+      !isInLine(
+        snakePositions[i],
+        snakePositions[i + 1],
+        getDirection(snakePositions[i - 1], snakePositions[i])
+      )
+    ) {
+      // we are on a curve
       context.beginPath();
-      let startDirection = getDirection(snakePositions[i - 1], snakePositions[i]);
+      let startDirection = getDirection(
+        snakePositions[i - 1],
+        snakePositions[i]
+      );
       let endDirection = getDirection(snakePositions[i], snakePositions[i + 1]);
 
-      let startPosition = getArcPoint(snakePositions[i], startDirection, endDirection, false);
-      let endPosition = getArcPoint(snakePositions[i], startDirection, endDirection, true);
+      let startPosition = getArcPoint(
+        snakePositions[i],
+        startDirection,
+        endDirection,
+        false
+      );
+      let endPosition = getArcPoint(
+        snakePositions[i],
+        startDirection,
+        endDirection,
+        true
+      );
       let cornerPos = getCornerPos(startPosition, startDirection);
 
       context.moveTo(startPosition[0], startPosition[1]);
-      context.arcTo(cornerPos[0], cornerPos[1], endPosition[0], endPosition[1], 15);
+      context.arcTo(
+        cornerPos[0],
+        cornerPos[1],
+        endPosition[0],
+        endPosition[1],
+        15
+      );
       context.stroke();
     } else {
       context.beginPath();
-      let startPosition = getLinePoint(snakePositions[i], getDirection(snakePositions[i - 1], snakePositions[i]), false);
-      let endPosition = getLinePoint(snakePositions[i], getDirection(snakePositions[i - 1], snakePositions[i]), true);
+      let startPosition = getLinePoint(
+        snakePositions[i],
+        getDirection(snakePositions[i - 1], snakePositions[i]),
+        false
+      );
+      let endPosition = getLinePoint(
+        snakePositions[i],
+        getDirection(snakePositions[i - 1], snakePositions[i]),
+        true
+      );
       context.moveTo(startPosition[0], startPosition[1]);
       context.lineTo(endPosition[0], endPosition[1]);
       context.stroke();
@@ -815,21 +878,33 @@ function drawCanvas(width, color) {
 }
 
 function getCornerPos(position, direction) {
-  return [position[0] + (direction[0] * 15), position[1] + (direction[1] * 15)];
+  return [position[0] + direction[0] * 15, position[1] + direction[1] * 15];
 }
 
 function getLinePoint(position, direction, endPosition) {
   if (endPosition) {
-    return [position[0] * 30 + 15 + (direction[0] * 15), position[1] * 30 + 15 + (direction[1] * 15)];
+    return [
+      position[0] * 30 + 15 + direction[0] * 15,
+      position[1] * 30 + 15 + direction[1] * 15
+    ];
   }
-  return [position[0] * 30 + 15 + (direction[0] * -15), position[1] * 30 + 15 + (direction[1] * -15)];
+  return [
+    position[0] * 30 + 15 + direction[0] * -15,
+    position[1] * 30 + 15 + direction[1] * -15
+  ];
 }
 
 function getArcPoint(position, direction1, direction2, endPosition) {
   if (endPosition) {
-    return [position[0] * 30 + 15 + (direction2[0] * 15), position[1] * 30 + 15 + (direction2[1] * 15)];
+    return [
+      position[0] * 30 + 15 + direction2[0] * 15,
+      position[1] * 30 + 15 + direction2[1] * 15
+    ];
   }
-  return [position[0] * 30 + 15 + (direction1[0] * -15), position[1] * 30 + 15 + (direction1[1] * -15)];
+  return [
+    position[0] * 30 + 15 + direction1[0] * -15,
+    position[1] * 30 + 15 + direction1[1] * -15
+  ];
 }
 
 function getDirection(pos1, pos2) {
@@ -850,7 +925,7 @@ function isInLine(pos1, pos2, direction) {
   } else if (direction[1] == 0 && pos1[1] == pos2[1]) {
     return true;
   }
-  
+
   return false;
 }
 
@@ -872,14 +947,16 @@ function snakeOptions() {
     getCookie("enableDeath") == "off" ? false : true;
   document.getElementById("speedOption").value =
     getCookie("speed") === undefined ? "350" : getCookie("speed");
-  document.getElementById("snakeMode").value = 
+  document.getElementById("snakeMode").value =
     getCookie("snakeMode") === undefined ? "normal" : getCookie("snakeMode");
-  document.getElementById("snakeWidthOption").value = 
+  document.getElementById("snakeWidthOption").value =
     getCookie("snakeWidth") === undefined ? 15 : getCookie("snakeWidth");
-  document.getElementById("snakeColorOption").value = 
+  document.getElementById("snakeColorOption").value =
     getCookie("snakeColor") === undefined ? "#99FF99" : getCookie("snakeColor");
-  document.getElementById("snakeBorderColorOption").value = 
-    getCookie("snakeBorderColor") === undefined ? "#90EE90" : getCookie("snakeBorderColor");
+  document.getElementById("snakeBorderColorOption").value =
+    getCookie("snakeBorderColor") === undefined
+      ? "#90EE90"
+      : getCookie("snakeBorderColor");
   document.getElementById("snakeOptions").style.backgroundColor = "gray";
   document.getElementById("fruitOptions").style.backgroundColor = "";
   document.getElementById("mapOptions").style.backgroundColor = "";
@@ -894,10 +971,12 @@ function fruitOptions() {
   `);
   document.getElementById("fruitCount").value =
     getCookie("fruitCount") === undefined ? 1 : getCookie("fruitCount");
-  document.getElementById("fruitColorOption").value = 
+  document.getElementById("fruitColorOption").value =
     getCookie("foodColor") === undefined ? "#87CEFA" : getCookie("foodColor");
-  document.getElementById("fruitBorderColorOption").value = 
-    getCookie("foodBorderColor") === undefined ? "#91B8C5" : getCookie("foodBorderColor");
+  document.getElementById("fruitBorderColorOption").value =
+    getCookie("foodBorderColor") === undefined
+      ? "#91B8C5"
+      : getCookie("foodBorderColor");
   document.getElementById("snakeOptions").style.backgroundColor = "";
   document.getElementById("fruitOptions").style.backgroundColor = "gray";
   document.getElementById("mapOptions").style.backgroundColor = "";
@@ -917,10 +996,14 @@ function mapOptions() {
     <label for="alternateBackgroundColorOption">Alternate Color</label><input value="#EEEEEE" onchange="updateSliderOption(this, 'alternateBackgroundColor')" id="alternateBackgroundColorOption" type="color"><br>
   `);
   loadCookies();
-  document.getElementById("backgroundColorOption").value = 
-    getCookie("backgroundColor") === undefined ? "#FFFFFF" : getCookie("backgroundColor");
-  document.getElementById("alternateBackgroundColorOption").value = 
-    getCookie("alternateBackgroundColor") === undefined ? "#EEEEEE" : getCookie("alternateBackgroundColor");
+  document.getElementById("backgroundColorOption").value =
+    getCookie("backgroundColor") === undefined
+      ? "#FFFFFF"
+      : getCookie("backgroundColor");
+  document.getElementById("alternateBackgroundColorOption").value =
+    getCookie("alternateBackgroundColor") === undefined
+      ? "#EEEEEE"
+      : getCookie("alternateBackgroundColor");
   document.getElementById("gameMode").value =
     getCookie("gameMode") === undefined ? "normal" : getCookie("gameMode");
   document.getElementById("enableWidth").checked =
@@ -987,18 +1070,24 @@ function updateCheckOption(object, optionName) {
   loadCookies();
 }
 
-function drawBackground() {  
+function drawBackground() {
   for (var i = 0; i < mapHeight; i++) {
     for (var j = 0; j < mapWidth; j++) {
       backgroundCheckersContext.beginPath();
       if ((j + (i % 2)) % 2 == 0) {
-        backgroundCheckersContext.fillStyle = getCookie("backgroundColor") === undefined ? "#FFFFFF" : getCookie("backgroundColor");
+        backgroundCheckersContext.fillStyle =
+          getCookie("backgroundColor") === undefined
+            ? "#FFFFFF"
+            : getCookie("backgroundColor");
       } else {
-        backgroundCheckersContext.fillStyle = getCookie("alternateBackgroundColor") === undefined ? "#EEEEEE" : getCookie("alternateBackgroundColor");
+        backgroundCheckersContext.fillStyle =
+          getCookie("alternateBackgroundColor") === undefined
+            ? "#EEEEEE"
+            : getCookie("alternateBackgroundColor");
       }
-      
+
       backgroundCheckersContext.rect(j * 30, i * 30, 30, 30);
-      
+
       backgroundCheckersContext.fill();
     }
   }
@@ -1017,21 +1106,33 @@ function loadCookies() {
     mapHeight =
       getCookie("mapHeight") === undefined ? 13 : getCookie("mapHeight");
   }
-  
+
   delay = 500 - (getCookie("speed") === undefined ? 350 : getCookie("speed"));
-  
-  snakeWidth = (getCookie("snakeWidth") === undefined ? 15 : getCookie("snakeWidth"));
-  
-  snakeColor = getCookie("snakeColor") === undefined ? "#99FF99" : getCookie("snakeColor");
-  snakeBorderColor = getCookie("snakeBorderColor") === undefined ? "#90EE90" : getCookie("snakeBorderColor");
-  
-  foodColor = getCookie("foodColor") === undefined ? "#87CEFA" : getCookie("foodColor");
-  foodBorderColor = getCookie("foodBorderColor") === undefined ? "#91B8C5" : getCookie("foodBorderColor");
-  
+
+  snakeWidth =
+    getCookie("snakeWidth") === undefined ? 15 : getCookie("snakeWidth");
+
+  snakeColor =
+    getCookie("snakeColor") === undefined ? "#99FF99" : getCookie("snakeColor");
+  snakeBorderColor =
+    getCookie("snakeBorderColor") === undefined
+      ? "#90EE90"
+      : getCookie("snakeBorderColor");
+
+  foodColor =
+    getCookie("foodColor") === undefined ? "#87CEFA" : getCookie("foodColor");
+  foodBorderColor =
+    getCookie("foodBorderColor") === undefined
+      ? "#91B8C5"
+      : getCookie("foodBorderColor");
+
   //document.getElementById("foodBox").style.backgroundColor = "#ff0000";
-    //getCookie("backgroundColor") === undefined ? "#FFFFFF" : getCookie("backgroundColor");
-  
-  if (getCookie("snakeMode") === undefined || getCookie("snakeMode") == "normal") {
+  //getCookie("backgroundColor") === undefined ? "#FFFFFF" : getCookie("backgroundColor");
+
+  if (
+    getCookie("snakeMode") === undefined ||
+    getCookie("snakeMode") == "normal"
+  ) {
     snakeMode = "normal";
     document.getElementById("backgroundBox").style.display = "none";
     canvas.style.display = "";
@@ -1040,7 +1141,7 @@ function loadCookies() {
     canvas.style.display = "none";
     document.getElementById("backgroundBox").style.display = "";
   }
-  
+
   if (snakeMode == "normal" || snakeMode == "blocky") {
     animationTime = 0;
   } else {
@@ -1053,7 +1154,7 @@ function loadCookies() {
     (mapHeight * 30).toString() + "px";
   document.getElementById("backgroundBox").style.marginLeft =
     "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
-  
+
   document.getElementById("foodBox").style.width =
     (mapWidth * 30).toString() + "px";
   document.getElementById("foodBox").style.height =
@@ -1074,7 +1175,7 @@ function loadCookies() {
     "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
   canvas.style.marginLeft =
     "calc((50% - (" + (mapWidth * 30).toString() + "px / 2)) - 12px)";
-  
+
   backgroundCheckersCanvas.height = (mapHeight * 30).toString();
   backgroundCheckersCanvas.width = (mapWidth * 30).toString();
   backgroundCheckersCanvas.style.marginLeft =
@@ -1089,9 +1190,9 @@ function loadCookies() {
     getCookie("gameMode") === undefined ? "normal" : getCookie("gameMode");
   deathAllowed = getCookie("enableDeath") == "off" ? false : true;
   numFood = getCookie("fruitCount") === undefined ? 1 : getCookie("fruitCount");
-  
+
   drawBackground();
-  
+
   reset();
 }
 

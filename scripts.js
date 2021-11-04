@@ -53,6 +53,10 @@ var xDown = null;
 
 var yDown = null;
 
+function chipotle() {
+  alert("Call (269) 337-0599 for Chiptle! (#notsponsored)");
+}
+
 function jimmyjohns() {
   alert("Call (269) 447-2921 for Jimmy Johns! (#notsponsored)");
 }
